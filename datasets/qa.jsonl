@@ -1,0 +1,8 @@
+{"input": "What is the capital of France?", "expected": "Paris", "metadata": {"topic": "geography"}}
+{"input": "How many continents are there on Earth?", "expected": "7", "metadata": {"topic": "geography"}}
+{"input": "Who wrote the play Romeo and Juliet?", "expected": "Shakespeare", "metadata": {"topic": "literature"}}
+{"input": "What is the chemical symbol for gold?", "expected": "Au", "metadata": {"topic": "science"}}
+{"input": "In what year did the first humans land on the Moon?", "expected": "1969", "metadata": {"topic": "history"}}
+{"input": "What is the largest planet in our solar system?", "expected": "Jupiter", "metadata": {"topic": "science"}}
+{"input": "What language has the most native speakers in the world?", "expected": "Mandarin", "metadata": {"topic": "language"}}
+{"input": "What is the square root of 144?", "expected": "12", "metadata": {"topic": "math"}}
