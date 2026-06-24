@@ -1,0 +1,15 @@
+# Loads variables from a .env file (like OPENAI_API_KEY) into the environment.
+python-dotenv>=1.0.0
+
+# rich renders score tables and run-vs-run diffs in the terminal.
+rich>=13.0.0
+
+# --- Provider SDKs ---
+# You only strictly need the one matching your PROVIDER (see .env). Both are
+# light, and installing both lets you switch stacks with one env-var change.
+
+# OpenAI — used when PROVIDER=openai.
+openai>=1.30.0
+
+# Anthropic — used when PROVIDER=claude.
+anthropic>=0.111.0
