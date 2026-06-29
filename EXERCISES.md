@@ -151,6 +151,58 @@ run enough times that the difference clears the noise (`compare()`).
 
 ---
 
+## Going further — three more kinds of eval **(offline)**
+
+**Recall (trajectory, `10`).** The "lucky" agent scores 100% on the final answer but
+0% on tool use. What does that reveal, and why isn't answer-accuracy enough for an
+agent?
+
+<details><summary>▸ Answer</summary>
+
+It **guessed** — it reached the right answer without doing the work (never called the
+required tool). For an agent, a right answer can hide a broken or unsafe process, so
+you grade the **trajectory** (steps + answer) on several axes: correctness, required
+tool used, no forbidden tools, within the step budget.
+</details>
+
+**Predict (annotation, `11`).** Observed agreement is 83% but Cohen's kappa is only
+0.75. Why is kappa lower, and which number should you trust?
+
+<details><summary>▸ Answer</summary>
+
+Some of that 83% is agreement you'd expect **by chance** (especially with imbalanced
+classes). Kappa subtracts the chance baseline, so it's the **honest** reliability
+number. A low kappa means your gold labels are noisy — fix the guidelines and
+re-annotate before trusting any score built on them.
+</details>
+
+**Recall (online eval, `12`).** Variant B beats A on satisfaction with a significant
+gap. Name the two conditions that must *both* hold before you ship B.
+
+<details><summary>▸ Answer</summary>
+
+(1) The difference must clear the **margin of error** (a small sample can't prove a
+real gap), and (2) no **guardrail** metric — latency, refusal rate, cost — may have
+regressed. A headline win that quietly breaks a guardrail is still a regression.
+</details>
+
+**Predict (faithfulness, `13`).** A RAG answer says "the reset link is valid for 30
+minutes" — and that happens to be true — but the retrieved context never mentions an
+expiry. Does it pass a *correctness* check? A *faithfulness* check? Why does the gap
+matter?
+
+<details><summary>▸ Answer</summary>
+
+It can pass correctness (it's true) but **fails faithfulness** (the context didn't
+support it — the model made it up and got lucky). That's the danger: an ungrounded
+answer that happens to be right today teaches you to trust a system that's actually
+hallucinating. Faithfulness needs no gold answer — only the context — so it catches
+exactly what correctness misses. The fix at answer time is the grounded prompt:
+answer only from context, decline when it's silent.
+</details>
+
+---
+
 ## Capstone — `eval_run.py`
 
 **Do.** Save a baseline (`--save baseline.run.json`), then run again with
