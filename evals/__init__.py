@@ -17,7 +17,7 @@ Import what you need, e.g.:
 """
 
 from .dataset import Example, load_jsonl
-from .judges import judge_pairwise, judge_pointwise
+from .judges import judge_faithfulness, judge_pairwise, judge_pointwise
 from .metrics import (
     accuracy,
     compare,
@@ -51,6 +51,7 @@ __all__ = [
     "numeric_close",
     "judge_pointwise",
     "judge_pairwise",
+    "judge_faithfulness",
     "run_eval",
     "Result",
     "Report",
