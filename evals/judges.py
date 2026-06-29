@@ -51,6 +51,33 @@ def judge_pointwise(question: str, answer: str, rubric: str, reference: str | No
     return Score(passed=raw >= 4, score=(raw - 1) / 4, detail=f"judge rated {raw}/5")
 
 
+_FAITHFULNESS_SYSTEM = (
+    "You judge whether an ANSWER is faithful to (fully grounded in) the provided "
+    "CONTEXT. An answer is faithful only if EVERY factual claim it makes is supported "
+    "by the context. A claim that is true in the real world but NOT present in the "
+    "context still makes the answer unfaithful — the test is grounding, not truth. "
+    "Refusing or saying the context doesn't cover it, when it genuinely doesn't, IS "
+    "faithful. Rate 1 (claims unsupported by the context) to 5 (every claim grounded). "
+    "Reply with ONLY the integer."
+)
+
+
+def judge_faithfulness(context: str, answer: str) -> Score:
+    """Grade how well an answer stays grounded in its context (1–5, as a 0–1 Score).
+
+    This is the canonical RAG failure that answer-correctness and retrieval metrics
+    both miss: a fluent, even *true* answer that asserts something the retrieved
+    context never supports. Faithfulness needs no gold answer — only the context the
+    model was given — so it's a *reference-free* scorer. (Related names: groundedness,
+    the "faithfulness" leg of the RAG eval triad.)
+    """
+    user = f"CONTEXT:\n{context}\n\nANSWER:\n{answer}\n\nFaithfulness score (1-5):"
+    reply = generate(_FAITHFULNESS_SYSTEM, user, temperature=0.0, max_tokens=8)
+    m = re.search(r"[1-5]", reply)
+    raw = int(m.group()) if m else 1
+    return Score(passed=raw >= 4, score=(raw - 1) / 4, detail=f"faithfulness {raw}/5")
+
+
 _PAIRWISE_SYSTEM = (
     "You compare two answers, A and B, to the same question and decide which is "
     "better according to the rubric. Reply with exactly one token: A, B, or TIE."
