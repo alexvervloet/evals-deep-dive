@@ -21,9 +21,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
-
 import evals
+from dotenv import load_dotenv
 
 load_dotenv()
 evals.ensure_ready()
@@ -57,15 +56,21 @@ report = evals.run_eval(classify, dataset, {"exact_match": evals.exact_match})
 predicted = [r.output for r in report.results]
 expected = [r.example.expected for r in report.results]
 
-print(f"Accuracy: {evals.accuracy(predicted, expected):.0%}  ({len(dataset)} examples)\n")
+print(
+    f"Accuracy: {evals.accuracy(predicted, expected):.0%}  ({len(dataset)} examples)\n"
+)
 print("Per-class precision / recall / F1:")
 for label in LABELS:
     prf = evals.precision_recall_f1(predicted, expected, positive_label=label)
-    print(f"  {label:<9} P={prf['precision']:.2f}  R={prf['recall']:.2f}  F1={prf['f1']:.2f}")
+    print(
+        f"  {label:<9} P={prf['precision']:.2f}  R={prf['recall']:.2f}  F1={prf['f1']:.2f}"
+    )
 
 print("\nMisclassified:")
 for r in report.failures("exact_match"):
-    print(f"  predicted {r.output:<9} want {r.example.expected:<9} | {r.example.input[:50]}...")
+    print(
+        f"  predicted {r.output:<9} want {r.example.expected:<9} | {r.example.input[:50]}..."
+    )
 
 print(
     "\nThe 'hard' rows (sarcasm, mixed signals) are where errors cluster — and "
