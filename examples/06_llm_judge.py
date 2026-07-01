@@ -28,9 +28,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
-
 import evals
+from dotenv import load_dotenv
 
 load_dotenv()
 evals.ensure_ready()
@@ -53,11 +52,15 @@ def qa_task(question: str) -> str:
 
 def judge_scorer(output: str, example) -> evals.Score:
     """Wrap the pointwise judge as a scorer: (output, example) -> Score."""
-    return evals.judge_pointwise(example.input, output, RUBRIC, reference=example.expected)
+    return evals.judge_pointwise(
+        example.input, output, RUBRIC, reference=example.expected
+    )
 
 
 # One task call + one judge call per example, both applied to the same answer.
-report = evals.run_eval(qa_task, dataset, {"contains": evals.contains_expected, "judge": judge_scorer})
+report = evals.run_eval(
+    qa_task, dataset, {"contains": evals.contains_expected, "judge": judge_scorer}
+)
 
 print(f"{'code':>4} {'judge':>5}  question -> answer")
 print("-" * 70)
@@ -65,7 +68,11 @@ for r in report.results:
     code = "ok" if r.scores["contains"].passed else "X"
     judge = r.scores["judge"].detail.replace("judge rated ", "")
     answer = " ".join(r.output.split())[:40]
-    flag = "  <- disagree" if r.scores["contains"].passed != r.scores["judge"].passed else ""
+    flag = (
+        "  <- disagree"
+        if r.scores["contains"].passed != r.scores["judge"].passed
+        else ""
+    )
     print(f"{code:>4} {judge:>5}  {r.example.input[:34]:<34} -> {answer}...{flag}")
 
 print(
