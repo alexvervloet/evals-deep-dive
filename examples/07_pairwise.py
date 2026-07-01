@@ -26,9 +26,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
-
 import evals
+from dotenv import load_dotenv
 
 load_dotenv()
 evals.ensure_ready()
@@ -39,7 +38,9 @@ dataset = evals.load_jsonl(os.path.join(ROOT, "datasets", "qa.jsonl"))
 
 SYSTEM_A = "Answer the question in a single word or number. Nothing else."
 SYSTEM_B = "Answer the question in a full, friendly, helpful sentence."
-RUBRIC = "which answer is more helpful and clear for a curious person, while still correct"
+RUBRIC = (
+    "which answer is more helpful and clear for a curious person, while still correct"
+)
 
 wins = {"A": 0, "B": 0, "TIE": 0}
 for ex in dataset:
