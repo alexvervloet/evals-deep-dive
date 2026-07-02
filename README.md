@@ -303,6 +303,16 @@ cries "regression" when a change clears the noise. **Suggested exercise:** wire
 `--fail-under` into a pre-commit hook, then watch a quality-tanking prompt change
 fail the build.
 
+> ⚠️ **The diff's `± margin` will look huge — often ±40% or more — and that's
+> honest, not a bug.** It's the 95% confidence interval on the *difference*
+> between two runs' pass rates, and two things blow it up here: the datasets are
+> tiny (~10 examples, so the margin scales as ~1/√n and one example flipping is a
+> 10-point swing) and each score is binary 0/1 (maximum variance). The takeaway
+> *is* the lesson: with a handful of examples you genuinely can't tell a real
+> quality change from noise, so `compare()` will call almost any diff "within
+> noise." Shrink the margin with more data or more `--runs`, not by trusting a
+> smaller sample.
+
 ---
 
 ## Where to go next
@@ -431,5 +441,7 @@ this sequence builds naturally:
 - [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
 - [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
 - [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
 
 **You are here: #5 — Evals.**
