@@ -33,9 +33,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
-
 import evals
+from dotenv import load_dotenv
 
 load_dotenv()
 evals.ensure_ready()
@@ -67,7 +66,7 @@ CASES = [
 
 GROUNDED_SYSTEM = (
     "Answer the question using ONLY the provided context. If the context does not "
-    "contain the answer, say exactly: \"The context doesn't say.\" Do not use outside "
+    'contain the answer, say exactly: "The context doesn\'t say." Do not use outside '
     "knowledge."
 )
 # Deliberately pushy: this is the "eager assistant" failure mode — always give a
@@ -82,7 +81,9 @@ LOOSE_SYSTEM = (
 
 
 def answer(system: str, question: str, context: str) -> str:
-    return evals.generate(system, f"Context:\n{context}\n\nQuestion: {question}", temperature=0.0)
+    return evals.generate(
+        system, f"Context:\n{context}\n\nQuestion: {question}", temperature=0.0
+    )
 
 
 grounded_scores: list[float] = []
@@ -99,17 +100,35 @@ for case in CASES:
         score = evals.judge_faithfulness(case["context"], out)
         bucket.append(score.score)
         flag = "" if score.passed else "  <- unsupported by context"
-        print(f"{score.detail.split()[-1]:>5}  {label:<8}  {' '.join(out.split())[:46]}{flag}")
+        print(
+            f"{score.detail.split()[-1]:>5}  {label:<8}  {' '.join(out.split())[:46]}{flag}"
+        )
     print(f"        Q: {case['q']}")
 
-mean = lambda xs: sum(xs) / len(xs) if xs else 0.0
+def mean(xs: list[float]) -> float:
+    return sum(xs) / len(xs) if xs else 0.0
+
+
 print("-" * 78)
-print(f"Mean faithfulness — grounded prompt: {mean(grounded_scores):.2f}"
-      f"   |   loose prompt: {mean(loose_scores):.2f}")
+print(
+    f"Mean faithfulness — grounded prompt: {mean(grounded_scores):.2f}"
+    f"   |   loose prompt: {mean(loose_scores):.2f}"
+)
 print(
     "\nThe grounded prompt scores higher because it declines when the context is "
     "silent,\ninstead of inventing a plausible answer. A correctness-only eval would "
     "miss this:\nthe loose answers often *sound* right (and may even be true) — they "
     "just aren't\nsupported by what was retrieved. That gap is exactly what RAG "
     "systems must measure."
+)
+print(
+    "\nWatch the SSO row: a loose answer like \"No, the Pro plan doesn't include "
+    'SSO" is inferring\nabsence from silence — the context never says no, it just '
+    "doesn't mention SSO. Whether that\ncounts as faithful is a genuine judgment "
+    "call, and the judge here doesn't always penalize it,\neven though the grounded "
+    "prompt is stricter and simply declines. That's not a scorer bug — it's\nthe "
+    "same judge unreliability example 08 covers: the judge applies its own read of "
+    "the rubric\nand won't always match what you intended, especially on "
+    "negation-from-omission claims.\nCalibrate against human labels before trusting "
+    "a judge's numbers at face value."
 )
