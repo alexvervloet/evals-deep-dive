@@ -26,8 +26,9 @@ Examples
   python hands_on/eval_run.py sentiment --save baseline.run.json
   python hands_on/eval_run.py sentiment --baseline baseline.run.json
 
-  # CI gate: exit non-zero if the headline pass rate drops below 0.7
-  python hands_on/eval_run.py sentiment --fail-under 0.7
+
+  # CI gate: exit non-zero if the headline pass rate drops below 0.8
+  python hands_on/eval_run.py sentiment --fail-under 0.8
 """
 
 import argparse
@@ -36,11 +37,10 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import evals
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.table import Table
-
-import evals
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASETS = os.path.join(ROOT, "datasets")
@@ -80,7 +80,9 @@ def qa_suite():
         return evals.generate(answer_system, question, temperature=0.0)
 
     def judge_scorer(output, example):
-        return evals.judge_pointwise(example.input, output, rubric, reference=example.expected)
+        return evals.judge_pointwise(
+            example.input, output, rubric, reference=example.expected
+        )
 
     return {
         "dataset": evals.load_jsonl(os.path.join(DATASETS, "qa.jsonl")),
@@ -118,16 +120,33 @@ def parse_args(argv):
         description="Run an eval suite, with optional baseline diff and CI gate.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    p.add_argument("suite", nargs="?", default="sentiment", choices=list(SUITES),
-                   help="Which suite to run (default: sentiment).")
-    p.add_argument("--runs", type=int, default=1,
-                   help="Run the suite N times to see score variance (default 1).")
-    p.add_argument("--save", metavar="FILE",
-                   help="Save the run's full report to FILE (JSON).")
-    p.add_argument("--baseline", metavar="FILE",
-                   help="Diff this run against a previously saved report.")
-    p.add_argument("--fail-under", type=float, metavar="X",
-                   help="Exit non-zero if the primary pass rate is below X (a CI gate).")
+    p.add_argument(
+        "suite",
+        nargs="?",
+        default="sentiment",
+        choices=list(SUITES),
+        help="Which suite to run (default: sentiment).",
+    )
+    p.add_argument(
+        "--runs",
+        type=int,
+        default=1,
+        help="Run the suite N times to see score variance (default 1).",
+    )
+    p.add_argument(
+        "--save", metavar="FILE", help="Save the run's full report to FILE (JSON)."
+    )
+    p.add_argument(
+        "--baseline",
+        metavar="FILE",
+        help="Diff this run against a previously saved report.",
+    )
+    p.add_argument(
+        "--fail-under",
+        type=float,
+        metavar="X",
+        help="Exit non-zero if the primary pass rate is below X (a CI gate).",
+    )
     return p.parse_args(argv)
 
 
@@ -149,7 +168,9 @@ def main(argv) -> int:
         report = evals.run_eval(suite["task"], suite["dataset"], suite["scorers"])
         primary_rates.append(report.pass_rate(primary))
         if args.runs > 1:
-            console.print(f"[dim]run {i + 1}: {primary} pass rate {primary_rates[-1]:.0%}[/dim]")
+            console.print(
+                f"[dim]run {i + 1}: {primary} pass rate {primary_rates[-1]:.0%}[/dim]"
+            )
 
     assert report is not None
 
@@ -160,7 +181,11 @@ def main(argv) -> int:
     table.add_column("Mean score", justify="right")
     for name in report.scorer_names:
         marker = " *" if name == primary else ""
-        table.add_row(name + marker, f"{report.pass_rate(name):.0%}", f"{report.mean_score(name):.3f}")
+        table.add_row(
+            name + marker,
+            f"{report.pass_rate(name):.0%}",
+            f"{report.mean_score(name):.3f}",
+        )
     console.print(table)
     console.print("[dim]* = primary scorer (used for the gate and diff)[/dim]")
 
@@ -168,10 +193,25 @@ def main(argv) -> int:
     primary_rate = sum(primary_rates) / len(primary_rates)
     if args.runs > 1:
         lo, hi = evals.confidence_interval(primary_rates)
-        console.print(f"\n{primary} over {args.runs} runs: mean {primary_rate:.0%}, "
-                      f"95% CI [{lo:.0%}, {hi:.0%}]")
+        console.print(
+            f"\n{primary} over {args.runs} runs: mean {primary_rate:.0%}, "
+            f"95% CI [{lo:.0%}, {hi:.0%}]"
+        )
 
     # Diff against a saved baseline.
+    #
+    # A note on the "± margin" you'll see here. It's the 95% confidence interval
+    # on the *difference* between the two runs' pass rates (see evals.compare).
+    # On these teaching datasets it comes out startlingly wide — often ±40% or
+    # more — and that is the honest answer, not a defect. Two things blow it up:
+    #   1. Tiny n. The margin shrinks as ~1/sqrt(n). With ~10 examples one
+    #      example flipping is a 10-point swing, so the band is enormous. At
+    #      n=100 it's ~3x tighter; at n=1000, ~10x.
+    #   2. Binary scores. Each score is 0 or 1, which carries the most variance
+    #      possible. A graded (0.0-1.0) scorer or averaging over --runs is tighter.
+    # The lesson: with a handful of examples you *cannot* distinguish a real
+    # quality change from noise, so `likely_real` will call almost any diff
+    # "within noise". The fix is more data (or more runs), not a smaller margin.
     if args.baseline:
         base = evals.Report.load(args.baseline)
         console.print(f"\n[bold]Diff vs baseline[/bold] ({args.baseline}):")
@@ -179,10 +219,14 @@ def main(argv) -> int:
             base_rate = base.pass_rate(primary)
             cmp = evals.compare(base.scores_for(primary), report.scores_for(primary))
             verdict = "REAL change" if cmp["likely_real"] else "within noise"
-            console.print(f"  {primary}: {base_rate:.0%} -> {primary_rate:.0%} "
-                          f"({cmp['diff']:+.0%} ± {cmp['margin']:.0%}, {verdict})")
+            console.print(
+                f"  {primary}: {base_rate:.0%} -> {primary_rate:.0%} "
+                f"({cmp['diff']:+.0%} ± {cmp['margin']:.0%}, {verdict})"
+            )
         else:
-            console.print(f"  [yellow]baseline has no '{primary}' scorer to compare.[/yellow]")
+            console.print(
+                f"  [yellow]baseline has no '{primary}' scorer to compare.[/yellow]"
+            )
 
     # Save the full report.
     if args.save:
@@ -191,8 +235,10 @@ def main(argv) -> int:
 
     # CI gate.
     if args.fail_under is not None and primary_rate < args.fail_under:
-        console.print(f"\n[bold red]GATE FAILED[/bold red]: {primary} pass rate "
-                      f"{primary_rate:.0%} < {args.fail_under:.0%}")
+        console.print(
+            f"\n[bold red]GATE FAILED[/bold red]: {primary} pass rate "
+            f"{primary_rate:.0%} < {args.fail_under:.0%}"
+        )
         return 1
 
     return 0
