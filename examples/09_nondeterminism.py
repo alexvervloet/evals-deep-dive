@@ -17,7 +17,7 @@ or up for tighter confidence intervals.
 
 Run it:
 
-    python examples/09_nondeterminism.py
+    secrun python examples/09_nondeterminism.py
 """
 
 import os
