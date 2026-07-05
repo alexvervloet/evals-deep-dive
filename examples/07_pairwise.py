@@ -18,7 +18,7 @@ lesson: "better" is defined by your rubric, so write it deliberately.
 
 Run it:
 
-    python examples/07_pairwise.py
+    secrun python examples/07_pairwise.py
 """
 
 import os
