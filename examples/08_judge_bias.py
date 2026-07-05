@@ -18,7 +18,7 @@ pairs (no generation) so the judge's behaviour is the only variable.
 
 Run it:
 
-    python examples/08_judge_bias.py
+    secrun python examples/08_judge_bias.py
 """
 
 import os
