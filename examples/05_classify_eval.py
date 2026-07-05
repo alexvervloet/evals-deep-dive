@@ -13,7 +13,7 @@ beats another.
 
 Run it:
 
-    python examples/05_classify_eval.py
+    secrun python examples/05_classify_eval.py
 """
 
 import os
