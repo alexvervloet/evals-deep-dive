@@ -20,7 +20,7 @@ blindly.)
 
 Run it:
 
-    python examples/06_llm_judge.py
+    secrun python examples/06_llm_judge.py
 """
 
 import os
