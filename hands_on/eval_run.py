@@ -17,18 +17,18 @@ Three built-in suites:
 Examples
 --------
   # Run the default suite (sentiment) and print a report
-  python hands_on/eval_run.py
+  secrun python hands_on/eval_run.py
 
   # Run the QA suite a few times to see the score's variance
-  python hands_on/eval_run.py qa --runs 3
+  secrun python hands_on/eval_run.py qa --runs 3
 
   # Save a baseline, then later diff a new run against it
-  python hands_on/eval_run.py sentiment --save baseline.run.json
-  python hands_on/eval_run.py sentiment --baseline baseline.run.json
+  secrun python hands_on/eval_run.py sentiment --save baseline.run.json
+  secrun python hands_on/eval_run.py sentiment --baseline baseline.run.json
 
 
   # CI gate: exit non-zero if the headline pass rate drops below 0.8
-  python hands_on/eval_run.py sentiment --fail-under 0.8
+  secrun python hands_on/eval_run.py sentiment --fail-under 0.8
 """
 
 import argparse
