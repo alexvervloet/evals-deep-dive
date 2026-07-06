@@ -25,7 +25,7 @@ declines — and only the faithfulness scorer can tell them apart.
 
 Run it (makes a handful of small calls):
 
-    python examples/13_faithfulness.py
+    secrun python examples/13_faithfulness.py
 """
 
 import os
