@@ -217,7 +217,7 @@ a change as real when it exceeds the margin of error — so the tool refuses to 
 automated gate trustworthy.
 </details>
 
-**Stretch.** Wire `python hands_on/eval_run.py sentiment --fail-under 0.7` into a
+**Stretch.** Wire `secrun python hands_on/eval_run.py sentiment --fail-under 0.7` into a
 git pre-commit hook or CI step. Now a prompt change that tanks quality fails the
 build — evals as a safety net, not a one-off.
 
