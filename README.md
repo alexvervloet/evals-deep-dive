@@ -9,8 +9,8 @@ promptfoo, no OpenAI Evals, no Ragas; just enough code to *see* how evaluation
 works.
 
 This is the fifth of eight core repos in the series. The first four teach you to
-*build* LLM apps — the [OpenAI API](https://github.com/Ailuue/openai-api-deep-dive) and
-[Claude API](https://github.com/Ailuue/claude-api-deep-dive), [prompt engineering](https://github.com/Ailuue/prompt-engineering-deep-dive), and a [RAG](https://github.com/Ailuue/rag-deep-dive) system on top.
+*build* LLM apps — the [OpenAI API](https://github.com/alexvervloet/openai-api-deep-dive) and
+[Claude API](https://github.com/alexvervloet/claude-api-deep-dive), [prompt engineering](https://github.com/alexvervloet/prompt-engineering-deep-dive), and a [RAG](https://github.com/alexvervloet/rag-deep-dive) system on top.
 This one teaches you to *measure* them. It's the meta-skill that makes the other
 three trustworthy: once you can put a number on quality, you can improve it on
 purpose instead of by vibes.
@@ -44,12 +44,13 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Choose your provider and add your key
+# 3. Choose your provider (set PROVIDER in .env); your key loads separately
 cp .env.example .env
-#    ...then open .env. Set PROVIDER to "openai" or "claude" and paste the key.
+#    Your API key does NOT go in .env. Store it in your OS keychain and run
+#    lessons with `secrun` — 2-minute setup in ../SECRETS.md.
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
-python check_setup.py
+secrun python check_setup.py       # secrun injects your key so the check can see it
 ```
 
 Evals are provider-agnostic, so this repo is too — pick whichever stack you set up
@@ -155,7 +156,7 @@ Now the task is a model. Same loop as Section 2 — only the task changed — so
 classify the sentiment set and report accuracy plus per-class precision/recall/F1.
 
 ```bash
-python examples/05_classify_eval.py
+secrun python examples/05_classify_eval.py
 ```
 
 Compare the accuracy to the rule-based baseline from Section 2 on the same data:
@@ -169,7 +170,7 @@ Some qualities can't be code-checked: "is this answer helpful?", "is this summar
 faithful?". For those you use a model as the grader.
 
 ```bash
-python examples/06_llm_judge.py
+secrun python examples/06_llm_judge.py
 ```
 
 The example answers the QA set and scores each answer two ways at once — a code
@@ -187,7 +188,7 @@ reliable at *relative* judgements, so the standard way to compare two systems is
 **pairwise win-rate**: run both, ask a judge which wins, tally.
 
 ```bash
-python examples/07_pairwise.py
+secrun python examples/07_pairwise.py
 ```
 
 The example pits a terse prompt against a verbose one. The winner depends entirely
@@ -202,7 +203,7 @@ A judge is a model, so it has biases — most notoriously **position bias**, a
 tendency to prefer whichever answer came first.
 
 ```bash
-python examples/08_judge_bias.py
+secrun python examples/08_judge_bias.py
 ```
 
 The test doubles as the fix: judge each pair in **both** orders and only count a
@@ -217,7 +218,7 @@ numbers.
 LLM outputs vary run to run, so a single eval number is a sample, not the truth.
 
 ```bash
-python examples/09_nondeterminism.py
+secrun python examples/09_nondeterminism.py
 ```
 
 This runs the same eval several times at temperature 0.7 to watch the score wobble,
@@ -269,7 +270,7 @@ hallucination. `judge_faithfulness(context, answer)` is a **reference-free** jud
 grounded. The example answers the same questions a *grounded* way and a *loose* way
 and shows the loose prompt inventing plausible facts the context doesn't support.
 ```bash
-python examples/13_faithfulness.py
+secrun python examples/13_faithfulness.py
 ```
 
 ---
@@ -283,17 +284,17 @@ evals become a regression gate in CI.
 
 ```bash
 # Run the default suite (sentiment) and print a report:
-python hands_on/eval_run.py
+secrun python hands_on/eval_run.py
 
 # Run the QA suite a few times to see the score's variance:
-python hands_on/eval_run.py qa --runs 3
+secrun python hands_on/eval_run.py qa --runs 3
 
 # Save a baseline, then later diff a new run against it:
-python hands_on/eval_run.py sentiment --save baseline.run.json
-python hands_on/eval_run.py sentiment --baseline baseline.run.json
+secrun python hands_on/eval_run.py sentiment --save baseline.run.json
+secrun python hands_on/eval_run.py sentiment --baseline baseline.run.json
 
 # CI gate: exit non-zero if the headline pass rate drops below 0.7:
-python hands_on/eval_run.py sentiment --fail-under 0.7
+secrun python hands_on/eval_run.py sentiment --fail-under 0.7
 ```
 
 Three built-in suites exercise the whole repo: `sentiment` (classifier + code
@@ -328,6 +329,9 @@ same idea, at more scale and rigor:
   ground truth you calibrate LLM judges against.
 - **Online / production evals** — scoring real traffic continuously, plus tracing
   and observability (Langfuse, Braintrust, Arize) to see what actually happened.
+  Running a *sampled* judge over live traffic to catch quality regressions over
+  time, and mining production failures back into this gold set, is its own bonus
+  dive, [**Observability**](https://github.com/alexvervloet/observability-deep-dive).
 - **Guardrails** — turning evals into runtime checks that block bad outputs before
   a user sees them.
 - **Eval-driven development** — making "the eval suite passed" the definition of
@@ -355,7 +359,7 @@ the same operational care as the app it grades:
 These shortcuts are right for learning and wrong for production. All seven
 concerns — observability, cost, reliability, caching, guardrails, prompt
 versioning, and eval gates — are built from scratch and wired into one running
-app in **[Production](https://github.com/Ailuue/ai-in-production-deep-dive)** (#8 in the
+app in **[Production](https://github.com/alexvervloet/ai-in-production-deep-dive)** (#8 in the
 series), where this repo's eval *gate* sits on the request path. It runs
 **offline on a mock provider**, so you can see the whole ops machinery with no key
 and no cost.
@@ -401,11 +405,11 @@ examples/
 
 ## Troubleshooting
 
-Run `python check_setup.py` first — it catches most problems. Then, by symptom:
+Run `secrun python check_setup.py` first — it catches most problems. Then, by symptom:
 
 | What you see | What it means / the fix |
 |--------------|-------------------------|
-| `PROVIDER=... needs ... in .env` | The active stack is missing its key. Set `PROVIDER` and the matching key in `.env`. |
+| `PROVIDER=... needs ... in the environment` | Set `PROVIDER` in `.env`, then load the key from your keychain by running under `secrun` — see [SECRETS.md](../SECRETS.md). |
 | `ModuleNotFoundError` (openai / anthropic / rich) | Dependencies aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
 | `AuthenticationError` / 401 | The key is present but wrong — check it matches the `PROVIDER` you set. |
 | Scores change every run | Expected above temperature 0 — that's the whole lesson of Section 10. Use `--runs` and confidence intervals; the library's tasks default to temperature 0 for stability. |
@@ -419,29 +423,30 @@ at the top, and run it directly.
 
 ## The series
 
-This is one of thirteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus five bonus dives.
+This is one of sixteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus eight bonus dives.
 Each one stands on its own — its own setup, examples, and capstone — and they all
 share the same house style: provider-agnostic, built from scratch (no
 frameworks), offline-first examples, and a real capstone. Do them in any order;
 this sequence builds naturally:
 
-1. [OpenAI API](https://github.com/Ailuue/openai-api-deep-dive) — the API from zero
-2. [Claude API](https://github.com/Ailuue/claude-api-deep-dive) — the same ideas, the Anthropic way
-3. [Prompt Engineering](https://github.com/Ailuue/prompt-engineering-deep-dive) — shape model behavior with better prompts (zero/few-shot, chain-of-thought, roles)
-4. [RAG](https://github.com/Ailuue/rag-deep-dive) — answer questions over your own documents
-5. [Evals](https://github.com/Ailuue/evals-deep-dive) — measure whether a change actually helps
-6. [Agents](https://github.com/Ailuue/agents-deep-dive) — give a model tools and a loop so it can act
-7. [Prompt Injection & Guardrails](https://github.com/Ailuue/prompt-injection-deep-dive) — attack and defend all of the above
-8. [Production](https://github.com/Ailuue/ai-in-production-deep-dive) — operate one app end to end: observability, cost, reliability, caching, guardrails, prompt versioning, eval gates
+1. [OpenAI API](https://github.com/alexvervloet/openai-api-deep-dive) — the API from zero
+2. [Claude API](https://github.com/alexvervloet/claude-api-deep-dive) — the same ideas, the Anthropic way
+3. [Prompt Engineering](https://github.com/alexvervloet/prompt-engineering-deep-dive) — shape model behavior with better prompts (zero/few-shot, chain-of-thought, roles)
+4. [RAG](https://github.com/alexvervloet/rag-deep-dive) — answer questions over your own documents
+5. [Evals](https://github.com/alexvervloet/evals-deep-dive) — measure whether a change actually helps
+6. [Agents](https://github.com/alexvervloet/agents-deep-dive) — give a model tools and a loop so it can act
+7. [Prompt Injection & Guardrails](https://github.com/alexvervloet/prompt-injection-deep-dive) — attack and defend all of the above
+8. [Production](https://github.com/alexvervloet/ai-in-production-deep-dive) — operate one app end to end: observability, cost, reliability, caching, guardrails, prompt versioning, eval gates
 
 **Bonus dives** — standalone, slotting in where they're most useful:
 
-- [Context Engineering](https://github.com/Ailuue/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
-- [Multimodal](https://github.com/Ailuue/multimodal-deep-dive) — images & audio, not just text
-- [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
-- [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
-- [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
-- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
-- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
+- [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive) — images & audio, not just text
+- [Fine-tuning](https://github.com/alexvervloet/fine-tuning-deep-dive) — teach a model new behavior by example
+- [MCP](https://github.com/alexvervloet/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
+- [Local Models](https://github.com/alexvervloet/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Observability](https://github.com/alexvervloet/observability-deep-dive) — watch a running app over time: drift, quality, alerting, the flywheel
 
 **You are here: #5 — Evals.**
