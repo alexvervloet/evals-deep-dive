@@ -1,21 +1,20 @@
 """
-Example 10 — evaluating an agent's TRAJECTORY, not just its answer. (offline)
-============================================================================
+Example 10: evaluating an agent's TRAJECTORY, not just its answer. (offline)
 
 Everything so far graded a single output string. But an *agent* takes a series of
-steps — it calls tools, reads results, decides what to do next — and a right final
+steps. It calls tools, reads results, and decides what to do next, and a right final
 answer can hide a broken process: the lucky guess, the forbidden tool call, the
 agent that took 9 steps to do a 2-step job. So you evaluate the **trajectory**.
 
 The shift: the task's "output" is now a structured **trace** (the steps it took +
 its answer), and you write scorers that grade the *process* on several axes:
 
-  - final_answer   — did it end up correct? (necessary, not sufficient)
-  - used_tool      — did it call the tool the task actually requires?
-  - no_forbidden   — did it avoid tools it shouldn't touch (e.g. delete)?
-  - efficient      — did it finish within a sane step budget?
+  - final_answer   did it end up correct? (necessary, not sufficient)
+  - used_tool      did it call the tool the task actually requires?
+  - no_forbidden   did it avoid tools it shouldn't touch (e.g. delete)?
+  - efficient      did it finish within a sane step budget?
 
-This is the same dataset -> task -> scorer -> report loop from example 01 — the
+This is the same dataset -> task -> scorer -> report loop from example 01; the
 only new idea is that outputs (and therefore scorers) are richer. Fully offline:
 the three "agents" are canned so you can see the scores without a model.
 
@@ -59,7 +58,7 @@ def good_agent(task: str) -> str:
 
 
 def lucky_agent(task: str) -> str:
-    # Right answer, but it never actually used the required tool — it guessed.
+    # Right answer, but it never actually used the required tool. It guessed.
     answer = "59" if "weather" in task else "1240"
     return json.dumps({"steps": [{"tool": "think", "args": "..."}], "answer": answer})
 
@@ -116,7 +115,7 @@ SCORERS = {
 }
 
 if __name__ == "__main__":
-    print("Evaluating three agents on the SAME tasks — all reach the right answer.\n")
+    print("Evaluating three agents on the SAME tasks; all reach the right answer.\n")
     for name, agent in [("good", good_agent), ("lucky (guessed)", lucky_agent),
                         ("reckless (wasteful + forbidden tool)", reckless_agent)]:
         report = evals.run_eval(task=agent, dataset=DATASET, scorers=SCORERS)
@@ -126,7 +125,7 @@ if __name__ == "__main__":
 
     print(
         "Takeaway: final-answer accuracy hides process failures. The 'lucky' agent\n"
-        "scores 100% on the answer but 0% on tool use — it guessed. The 'reckless' one\n"
+        "scores 100% on the answer but 0% on tool use: it guessed. The 'reckless' one\n"
         "is correct but called a destructive tool and blew the step budget. Grading the\n"
         "TRAJECTORY catches the agents that are right for the wrong reasons."
     )

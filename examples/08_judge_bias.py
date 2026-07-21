@@ -1,6 +1,5 @@
 """
-Example 08 — your judge is biased (and how to mitigate it).
-===========================================================
+Example 08: your judge is biased (and how to mitigate it).
 
 An LLM judge is a model, so it has biases. The most notorious is **position
 bias**: a tendency to prefer whichever answer is shown *first* (others include

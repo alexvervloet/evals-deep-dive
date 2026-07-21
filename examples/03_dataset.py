@@ -1,16 +1,15 @@
 """
-Example 03 — the dataset is the hard part (offline, no API call).
-=================================================================
+Example 03: the dataset is the hard part (offline, no API call).
 
 Clever scorers and metrics get the attention, but the quality of an eval is
 capped by the quality of its dataset. This example loads the three golden sets in
-datasets/ and looks at what's in them — and what *kind* of eval each enables.
+datasets/ and looks at what's in them, and what *kind* of eval each enables.
 
 The distinction to internalize:
 
-  - reference-based (has `expected`): you can score against a known answer —
+  - reference-based (has `expected`): you can score against a known answer 
     exact match, F1, numeric tolerance. Precise, but you had to label it.
-  - reference-free (no `expected`): you judge the output on its own merits —
+  - reference-free (no `expected`): you judge the output on its own merits 
     valid JSON? an LLM judge's rating? No labels needed, fuzzier signal.
 
 Run it:
@@ -41,13 +40,13 @@ for name in ["sentiment.jsonl", "qa.jsonl", "extraction.jsonl"]:
         print(f"  metadata: {sample.metadata}")
     print()
 
-# Metadata lets you slice results — e.g. "is accuracy worse on hard examples?"
+# Metadata lets you slice results: e.g. "is accuracy worse on hard examples?"
 sentiment = evals.load_jsonl(os.path.join(DATASETS, "sentiment.jsonl"))
 by_difficulty = Counter(e.metadata.get("difficulty", "?") for e in sentiment)
 print(f"sentiment.jsonl by difficulty: {dict(by_difficulty)}")
 
 print(
     "\nThese sets are tiny on purpose. Ten hand-checked, representative examples "
-    "beat a thousand sloppy ones — and the best examples come from real failures "
+    "beat a thousand sloppy ones, and the best examples come from real failures "
     "you find later and add back here so they never regress."
 )

@@ -1,21 +1,20 @@
 """
-Example 12 — online evals: A/B testing on live traffic. (offline)
-=================================================================
+Example 12: online evals: A/B testing on live traffic. (offline)
 
 Everything so far was an *offline* eval: a fixed dataset you score before shipping.
 But a passing offline score doesn't guarantee real users are better off. The
-complement is the **online eval** — measure a change on *live traffic*, by splitting
+complement is the **online eval**: measure a change on *live traffic*, by splitting
 users into variant A (control) and variant B (the change) and comparing an outcome
 metric you actually care about: thumbs-up rate, task completion, retention.
 
 The discipline is the same one from example 09 (nondeterminism) and the `compare()`
 significance test from example 05's metrics: **a difference is only real if it's
 bigger than the noise.** Ship B over A only when the gap clears the margin of error
-— and only if your *guardrail* metrics (latency, refusal rate, cost) didn't regress.
+and only if your *guardrail* metrics (latency, refusal rate, cost) didn't regress.
 
 This script simulates outcomes for two variants, runs the significance test, shows a
 guardrail check, and demonstrates why **sample size** decides whether you can
-conclude anything. Pure arithmetic — offline and free. (In production the outcome
+conclude anything. Pure arithmetic, offline and free. (In production the outcome
 booleans come from real user signals, not a simulation.)
 
 Run it:
@@ -36,7 +35,7 @@ def simulate(true_rate: float, n: int, seed: int) -> list[float]:
     """One outcome per request: 1.0 = user was satisfied, 0.0 = not.
 
     Stands in for live signal (a thumbs-up, a completed task). The *true* rate is
-    unknown in reality — that's what the A/B test is trying to detect.
+    unknown in reality; that's what the A/B test is trying to detect.
     """
     rng = random.Random(seed)
     return [1.0 if rng.random() < true_rate else 0.0 for _ in range(n)]
@@ -63,9 +62,9 @@ if __name__ == "__main__":
     # 3. A real win on the headline metric, but a GUARDRAIL regressed.
     print("Guardrail check (a metric that must NOT get worse):")
     refusal_a = sum(simulate(0.02, 1500, 3)) / 1500   # A refuses 2% of the time
-    refusal_b = sum(simulate(0.09, 1500, 4)) / 1500   # B refuses 9% — worse!
+    refusal_b = sum(simulate(0.09, 1500, 4)) / 1500   # B refuses 9%, worse!
     print(f"  refusal rate  A={refusal_a:.1%}  B={refusal_b:.1%}")
-    print("  -> B wins on satisfaction but refuses far more often. Do NOT ship — a\n"
+    print("  -> B wins on satisfaction but refuses far more often. Do NOT ship: a\n"
           "     headline win that regresses a guardrail is a regression.\n")
 
     print(

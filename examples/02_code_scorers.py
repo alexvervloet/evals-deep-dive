@@ -1,9 +1,8 @@
 """
-Example 02 — code-based scorers (offline, no API call).
-=======================================================
+Example 02: code-based scorers (offline, no API call).
 
 Before reaching for an LLM judge, reach for code. Code-based scorers are
-deterministic, instant, and free — and a surprising amount of what you want to
+deterministic, instant, and free, and a surprising amount of what you want to
 check is code-checkable: exact labels, required substrings, formats, valid JSON,
 numbers within tolerance.
 
@@ -31,7 +30,7 @@ def show(name: str, scorer, output: str, example: Example) -> None:
     print(f"         output={output!r}")
 
 
-print("exact_match — output must equal expected exactly:")
+print("exact_match: output must equal expected exactly:")
 show(
     "exact_match", evals.exact_match, "positive", Example(input="", expected="positive")
 )
@@ -42,7 +41,7 @@ show(
     Example(input="", expected="positive"),
 )
 
-print("\ncontains_expected — expected appears somewhere in the output:")
+print("\ncontains_expected: expected appears somewhere in the output:")
 show(
     "contains_expected",
     evals.contains_expected,
@@ -56,21 +55,21 @@ show(
     Example(input="", expected="Paris"),
 )
 
-print("\nmatches_regex — output matches a pattern (here: a 4-digit year):")
+print("\nmatches_regex: output matches a pattern (here: a 4-digit year):")
 year = evals.matches_regex(r"\b\d{4}\b")
 show("matches_regex", year, "Released in 1969.", Example(input=""))
 show("matches_regex", year, "Released last year.", Example(input=""))
 
-print("\nis_valid_json — output parses as JSON:")
+print("\nis_valid_json: output parses as JSON:")
 show("is_valid_json", evals.is_valid_json, '{"ok": true}', Example(input=""))
 show("is_valid_json", evals.is_valid_json, "{ok: true}", Example(input=""))
 
-print("\njson_has_keys — JSON object contains required keys (partial credit):")
+print("\njson_has_keys: JSON object contains required keys (partial credit):")
 keys = evals.json_has_keys(["name", "email"])
 show("json_has_keys", keys, '{"name": "Jane", "email": "j@x.com"}', Example(input=""))
 show("json_has_keys", keys, '{"name": "Jane"}', Example(input=""))
 
-print("\nnumeric_close — first number is within tolerance of expected:")
+print("\nnumeric_close: first number is within tolerance of expected:")
 close = evals.numeric_close(tolerance=0.5)
 show("numeric_close", close, "About 3.0 inches", Example(input="", expected="3.2"))
 show("numeric_close", close, "About 9 inches", Example(input="", expected="3.2"))

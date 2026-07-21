@@ -1,24 +1,23 @@
 """
-Example 11 — human annotation & inter-annotator agreement. (offline)
-====================================================================
+Example 11: human annotation & inter-annotator agreement. (offline)
 
 "The dataset is the hard part" (example 04). Where do the *gold labels* come from?
-Usually humans — and humans disagree. If your two annotators only agree 60% of the
+Usually humans, and humans disagree. If your two annotators only agree 60% of the
 time, your "ground truth" is shaky, and every eval built on it inherits that noise.
 So before you trust a labelled set, you **measure how much the annotators agreed**.
 
 Two numbers:
   - Observed agreement: the fraction of items both annotators labelled the same.
-    Easy, but misleading — if 90% of items are one class, two people guessing that
+    Easy, but misleading: if 90% of items are one class, two people guessing that
     class agree 80%+ of the time *by chance*.
   - Cohen's kappa (κ): agreement corrected for chance. κ=1 perfect, κ=0 no better
     than chance, κ<0 worse than chance. Rough reading: >0.8 great, 0.6–0.8 ok,
     <0.6 your labels (or your labelling guidelines) need work.
 
-Then you **adjudicate** the disagreements into a final gold label — and *those* are
+Then you **adjudicate** the disagreements into a final gold label, and *those* are
 what your eval scores against.
 
-This is pure arithmetic — offline and free.
+This is pure arithmetic, offline and free.
 
 Run it:
 
@@ -62,7 +61,7 @@ def grade_kappa(k: float) -> str:
         return "excellent"
     if k > 0.6:
         return "acceptable"
-    return "weak — fix the guidelines or retrain annotators"
+    return "weak: fix the guidelines or retrain annotators"
 
 
 if __name__ == "__main__":
@@ -80,7 +79,7 @@ if __name__ == "__main__":
 
     print(
         "\nTakeaway: observed agreement looks high, but κ is lower because some\n"
-        "agreement is just chance — κ is the honest number. A low κ means your eval's\n"
+        "agreement is just chance; κ is the honest number. A low κ means your eval's\n"
         "'ground truth' is noisy: tighten the labelling guidelines and re-annotate\n"
         "before you trust any score built on these labels. Adjudicated disagreements\n"
         "become the final gold set your eval (examples 01-09) scores against."

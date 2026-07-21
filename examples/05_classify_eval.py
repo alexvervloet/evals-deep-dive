@@ -1,14 +1,13 @@
 """
-Example 05 — evaluating an LLM classifier.
-==========================================
+Example 05: evaluating an LLM classifier.
 
-Now the system under test is a real LLM. Same loop as example 01 — only the task
+Now the system under test is a real LLM. Same loop as example 01, only the task
 changed from a rule to a model call. We classify the sentiment dataset and report
 accuracy plus per-class precision/recall/F1, so you can see not just *how often*
 it's right but *which kind* of mistakes it makes.
 
 Compare the accuracy here to the rule-based baseline from example 01 on the same
-data: that's the entire point of an eval — a number that says whether one system
+data: that's the entire point of an eval, a number that says whether one system
 beats another.
 
 Run it:
@@ -39,12 +38,12 @@ LABELS = ("positive", "negative", "neutral")
 
 
 def to_label(text: str) -> str:
-    """LLMs sometimes add punctuation or extra words — pin the reply to a label."""
+    """LLMs sometimes add punctuation or extra words, so pin the reply to a label."""
     t = text.strip().lower()
     for label in LABELS:
         if label in t:
             return label
-    return t  # unrecognized — counts as wrong, which is the honest outcome
+    return t  # unrecognized, counts as wrong, which is the honest outcome
 
 
 def classify(text: str) -> str:
@@ -73,7 +72,7 @@ for r in report.failures("exact_match"):
     )
 
 print(
-    "\nThe 'hard' rows (sarcasm, mixed signals) are where errors cluster — and "
+    "\nThe 'hard' rows (sarcasm, mixed signals) are where errors cluster, and "
     "where your labels are themselves debatable. That ambiguity is real; a good "
     "eval surfaces it instead of hiding it behind one number."
 )

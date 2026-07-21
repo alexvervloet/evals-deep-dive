@@ -1,11 +1,10 @@
 """
-Example 06 — LLM-as-judge (pointwise).
-======================================
+Example 06: LLM-as-judge (pointwise).
 
 Some answers can't be graded by code. "What is the capital of France?" -> "It's
 Paris, the City of Light." is correct, but a strict `contains` check for "Paris"
 might pass while "seven" vs "7" fails on a different question. When correctness is
-about *meaning*, you let a model grade — an LLM judge.
+about *meaning*, you let a model grade: an LLM judge.
 
 This example answers the QA dataset, then scores each answer two ways at once:
 
@@ -13,9 +12,9 @@ This example answers the QA dataset, then scores each answer two ways at once:
   - judge (model):   does an LLM, given the question + a reference, rate the
                      answer 1-5 against a rubric?
 
-Watch where they disagree — usually a correct answer phrased so the literal
+Watch where they disagree, usually a correct answer phrased so the literal
 string check misses it. That's the gap LLM judges fill. (And remember: the judge
-is itself a model with biases — example 08 — so calibrate it, don't trust it
+is itself a model with biases (example 08), so calibrate it, don't trust it
 blindly.)
 
 Run it:
@@ -80,6 +79,6 @@ print(
     f"   |   judge mean score: {report.mean_score('judge'):.2f}"
 )
 print(
-    "The disagreements are correct answers the strict string check missed — which "
+    "The disagreements are correct answers the strict string check missed, which "
     "is exactly when an LLM judge earns its (real, per-call) cost."
 )

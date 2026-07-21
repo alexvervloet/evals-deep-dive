@@ -1,10 +1,9 @@
 """
-Example 04 — metrics: from pass/fail to numbers that decide (offline math).
-===========================================================================
+Example 04: metrics: from pass/fail to numbers that decide (offline math).
 
 A pile of scored outputs isn't actionable until you aggregate it. This example
 works through the metrics in evals/metrics.py on small hand-made inputs so the
-math is visible — no API calls.
+math is visible, with no API calls.
 
 What each answers:
   - accuracy:           how often exactly right? (the headline)

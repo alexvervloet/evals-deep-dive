@@ -1,9 +1,8 @@
 """
-Example 09 — nondeterminism: one run is a point estimate.
-=========================================================
+Example 09: nondeterminism: one run is a point estimate.
 
 LLM outputs vary between runs (especially above temperature 0). So a single eval
-number is a sample, not the truth — re-run the same eval and it moves. This
+number is a sample, not the truth. Re-run the same eval and it moves. This
 example makes that visible and then does the honest thing with it.
 
   1. Run the same classifier eval several times at temperature 0.9 and watch the
@@ -83,7 +82,7 @@ print(f"B − A = {cmp['diff']:+.0%} ± {cmp['margin']:.0%}  ->  {verdict}")
 
 print(
     "\nIf you'd run each prompt once, you might have 'seen' a winner that's pure "
-    "sampling noise. With small datasets and few runs the interval is wide — which "
+    "sampling noise. With small datasets and few runs the interval is wide, which "
     "is the honest message: to claim an improvement, run enough to separate it "
     "from the wobble."
 )
