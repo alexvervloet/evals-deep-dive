@@ -1,11 +1,10 @@
 """
-Setup check — run this first.
-=============================
+Setup check: run this first.
 
     secrun python check_setup.py
 
 Checks your Python version, the installed packages, your chosen PROVIDER, and the
-API key that provider needs — and tells you exactly what to fix. Makes NO API
+API key that provider needs, and tells you exactly what to fix. Makes NO API
 calls, so it costs nothing. Uses only the standard library, so it runs even before
 `pip install` and can report missing dependencies instead of crashing.
 """
@@ -75,7 +74,7 @@ def check_python():
     if (major, minor) >= (3, 10):
         ok(f"Python {major}.{minor} (3.10+ required)")
         return True
-    fail(f"Python {major}.{minor} — this repo needs Python 3.10 or newer.")
+    fail(f"Python {major}.{minor}: this repo needs Python 3.10 or newer.")
     print("    Install a newer Python from https://www.python.org/downloads/")
     return False
 
@@ -97,9 +96,9 @@ def check_dependencies(provider):
     missing = []
     for import_name, pip_name, purpose in needed:
         if importlib.util.find_spec(import_name) is not None:
-            ok(f"{pip_name} — {purpose}")
+            ok(f"{pip_name}: {purpose}")
         else:
-            fail(f"{pip_name} MISSING — {purpose}")
+            fail(f"{pip_name} MISSING: {purpose}")
             missing.append(pip_name)
     if missing:
         print("\n    Install everything with:")
@@ -118,7 +117,7 @@ def check_keys(env, provider):
         value = _get(env, name)
         if not value or value == placeholder:
             fail(f"{name} is not set.")
-            print("    Store it in your OS keychain and run `secrun python check_setup.py` — see SECRETS.md.")
+            print("    Store it in your OS keychain and run `secrun python check_setup.py` . See SECRETS.md.")
             all_ok = False
         elif not value.startswith(prefix):
             warn(f"{name} is set but doesn't start with '{prefix}'. Double-check it.")
@@ -144,7 +143,7 @@ def main():
         print("Start here:  python examples/01_anatomy.py")
         print("(Examples 01–04 are offline and need no key.)")
         return 0
-    print(_c("Not ready yet — fix the ✗ items above, then run this again.", "1;31"))
+    print(_c("Not ready yet. Fix the ✗ items above, then run this again.", "1;31"))
     print("(Examples 01–04 are offline, so you can start those without a key.)")
     return 1
 
