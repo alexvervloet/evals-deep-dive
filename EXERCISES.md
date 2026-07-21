@@ -1,19 +1,19 @@
-# Exercises — make the learning stick
+# Exercises: make the learning stick
 
 Reading code teaches you less than *predicting* what it will do and then checking.
 This file turns each section of the [README](README.md) into a few quick
 active-recall prompts.
 
 How to use it: work the section first, then come back. **Commit to an answer
-before you run or reveal** — the prediction is where the learning happens, even
+before you run or reveal.** The prediction is where the learning happens, even
 (especially) when you're wrong. Answers are hidden behind ▸ toggles.
 
-> Examples 01–04 are **(offline)** — no API call, no cost. The rest make small,
+> Examples 01-04 are **(offline)**: no API call, no cost. The rest make small,
 > cheap calls; example 09 makes the most.
 
 ---
 
-## Section 2 — The anatomy of an eval **(offline)**
+## Section 2: The anatomy of an eval **(offline)**
 
 **Recall.** Name the four parts of every eval, and which one this whole repo
 argues is the hardest.
@@ -31,13 +31,13 @@ baseline doomed to miss the "hard" rows?
 <details><summary>▸ Answer</summary>
 
 Because sarcasm and mixed sentiment ("Not as bad as the reviews said") have no
-reliable keyword signal — the words point the wrong way. That ceiling is the
+reliable keyword signal; the words point the wrong way. That ceiling is the
 motivation for an LLM (example 05) and for measuring at all.
 </details>
 
 ---
 
-## Section 3 — Code-based scorers **(offline)**
+## Section 3: Code-based scorers **(offline)**
 
 **Predict.** Output is `"Positive!"` and the expected label is `"positive"`. Does
 `exact_match` pass? Does `contains_expected`?
@@ -46,13 +46,13 @@ motivation for an LLM (example 05) and for measuring at all.
 
 `exact_match` fails (the `!` and capital P make the strings unequal);
 `contains_expected` passes (case-insensitive substring). Choosing the scorer is
-choosing what "correct" means — and why example 05's task normalizes the label
+choosing what "correct" means, and why example 05's task normalizes the label
 before scoring.
 </details>
 
 ---
 
-## Section 4 — Metrics **(offline)**
+## Section 4: Metrics **(offline)**
 
 **Recall.** A spam filter labels *every* email as spam. What are its precision and
 recall for the "spam" class? Why does that show accuracy alone can lie?
@@ -61,7 +61,7 @@ recall for the "spam" class? Why does that show accuracy alone can lie?
 
 Recall is 100% (it caught all real spam) but precision is terrible (most flagged
 emails weren't spam). On an inbox that's mostly ham, plain accuracy could even
-look bad — and on mostly-spam data, a "flag everything" model could post high
+look bad, and on mostly-spam data, a "flag everything" model could post high
 accuracy while being useless. Precision/recall/F1 expose what one number hides.
 </details>
 
@@ -72,20 +72,20 @@ teach about "+2%" claims?
 <details><summary>▸ Answer</summary>
 
 Once the gap shrinks into the margin of error, `likely_real` flips to False. A
-small improvement that's inside the noise isn't a result you can trust — you'd
+small improvement that's inside the noise isn't a result you can trust; you'd
 need more data or runs to separate it from chance.
 </details>
 
 ---
 
-## Section 5 — Evaluating an LLM classifier
+## Section 5: Evaluating an LLM classifier
 
 **Predict, then run.** Will `examples/05_classify_eval.py` score 100%? Where will
 its errors cluster, and are those errors the *model's* fault?
 
 <details><summary>▸ Answer</summary>
 
-Almost certainly not 100% — errors cluster on the "hard" rows (sarcasm, mixed
+Almost certainly not 100%. Errors cluster on the "hard" rows (sarcasm, mixed
 signals). Some of those labels are genuinely debatable, so a "wrong" answer can be
 a disagreement with a shaky label, not a model failure. A good eval surfaces that
 rather than hiding it.
@@ -93,7 +93,7 @@ rather than hiding it.
 
 ---
 
-## Section 6 — LLM-as-judge
+## Section 6: LLM-as-judge
 
 **Recall.** When should you reach for an LLM judge instead of a code scorer? Name
 one risk you take on when you do.
@@ -102,28 +102,28 @@ one risk you take on when you do.
 
 Use a judge when correctness is about *meaning* and code can't check it (is this
 summary faithful? is this answer helpful?). The risk: the judge is itself a model
-with biases and costs a call per grade — so it must be calibrated, not trusted
+with biases and costs a call per grade, so it must be calibrated, not trusted
 blindly.
 </details>
 
 ---
 
-## Section 7 — Pairwise win-rate
+## Section 7: Pairwise win-rate
 
 **Predict.** `examples/07_pairwise.py` compares a one-word prompt (A) against a
 full-sentence prompt (B) on the rubric "more helpful." Who wins? Now imagine the
-rubric is "most concise" — who wins then?
+rubric is "most concise". Who wins then?
 
 <details><summary>▸ Answer</summary>
 
 B (helpful) under the helpfulness rubric; A (concise) under the conciseness
-rubric. Same answers, opposite winners — because the rubric *defines* "better."
+rubric. Same answers, opposite winners, because the rubric *defines* "better."
 The rubric is the most important sentence in the eval.
 </details>
 
 ---
 
-## Section 8 — Judge bias
+## Section 8: Judge bias
 
 **Recall.** What is position bias, and what's the one-line fix used in
 `examples/08_judge_bias.py`?
@@ -137,21 +137,21 @@ each pair in *both* orders and only count a win if the same answer wins both way
 
 ---
 
-## Section 9 — Nondeterminism & statistics
+## Section 9: Nondeterminism & statistics
 
 **Predict, then run.** You run the same eval twice at temperature 0.7. Will you get
 the same pass rate? What does that mean for trusting a single eval number?
 
 <details><summary>▸ Answer</summary>
 
-Probably not — the score wobbles run to run. So one number is a point estimate, not
+Probably not; the score wobbles run to run. So one number is a point estimate, not
 the truth. Report a mean with a confidence interval, and to claim system B beats A,
 run enough times that the difference clears the noise (`compare()`).
 </details>
 
 ---
 
-## Going further — three more kinds of eval **(offline)**
+## Going further: three more kinds of eval **(offline)**
 
 **Recall (trajectory, `10`).** The "lucky" agent scores 100% on the final answer but
 0% on tool use. What does that reveal, and why isn't answer-accuracy enough for an
@@ -159,7 +159,7 @@ agent?
 
 <details><summary>▸ Answer</summary>
 
-It **guessed** — it reached the right answer without doing the work (never called the
+It **guessed**. It reached the right answer without doing the work (never called the
 required tool). For an agent, a right answer can hide a broken or unsafe process, so
 you grade the **trajectory** (steps + answer) on several axes: correctness, required
 tool used, no forbidden tools, within the step budget.
@@ -172,7 +172,7 @@ tool used, no forbidden tools, within the step budget.
 
 Some of that 83% is agreement you'd expect **by chance** (especially with imbalanced
 classes). Kappa subtracts the chance baseline, so it's the **honest** reliability
-number. A low kappa means your gold labels are noisy — fix the guidelines and
+number. A low kappa means your gold labels are noisy, so fix the guidelines and
 re-annotate before trusting any score built on them.
 </details>
 
@@ -182,44 +182,44 @@ gap. Name the two conditions that must *both* hold before you ship B.
 <details><summary>▸ Answer</summary>
 
 (1) The difference must clear the **margin of error** (a small sample can't prove a
-real gap), and (2) no **guardrail** metric — latency, refusal rate, cost — may have
+real gap), and (2) no **guardrail** metric (latency, refusal rate, cost) may have
 regressed. A headline win that quietly breaks a guardrail is still a regression.
 </details>
 
 **Predict (faithfulness, `13`).** A RAG answer says "the reset link is valid for 30
-minutes" — and that happens to be true — but the retrieved context never mentions an
+minutes", and that happens to be true, but the retrieved context never mentions an
 expiry. Does it pass a *correctness* check? A *faithfulness* check? Why does the gap
 matter?
 
 <details><summary>▸ Answer</summary>
 
 It can pass correctness (it's true) but **fails faithfulness** (the context didn't
-support it — the model made it up and got lucky). That's the danger: an ungrounded
+support it; the model made it up and got lucky). That's the danger: an ungrounded
 answer that happens to be right today teaches you to trust a system that's actually
-hallucinating. Faithfulness needs no gold answer — only the context — so it catches
+hallucinating. Faithfulness needs no gold answer, only the context, so it catches
 exactly what correctness misses. The fix at answer time is the grounded prompt:
 answer only from context, decline when it's silent.
 </details>
 
 ---
 
-## Capstone — `eval_run.py`
+## Capstone: `eval_run.py`
 
 **Do.** Save a baseline (`--save baseline.run.json`), then run again with
 `--baseline baseline.run.json`. The diff says "within noise" even though the
-numbers differ slightly — why is that the *right* answer?
+numbers differ slightly. Why is that the *right* answer?
 
 <details><summary>▸ Answer</summary>
 
 Because run-to-run variation makes small deltas meaningless. `compare()` only flags
-a change as real when it exceeds the margin of error — so the tool refuses to cry
+a change as real when it exceeds the margin of error, so the tool refuses to cry
 "regression!" (or "improvement!") over noise. That restraint is what makes an
 automated gate trustworthy.
 </details>
 
 **Stretch.** Wire `secrun python hands_on/eval_run.py sentiment --fail-under 0.7` into a
 git pre-commit hook or CI step. Now a prompt change that tanks quality fails the
-build — evals as a safety net, not a one-off.
+build: evals as a safety net, not a one-off.
 
 ---
 
