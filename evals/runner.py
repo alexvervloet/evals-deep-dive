@@ -1,8 +1,7 @@
 """
-evals/runner.py — the eval loop, and the Report it produces.
-============================================================
+evals/runner.py: the eval loop, and the Report it produces.
 
-This is the heart of the whole repo, and it's tiny — because an eval *is* tiny
+This is the heart of the whole repo, and it's tiny, because an eval *is* tiny
 once you see it:
 
     for each example in the dataset:
@@ -12,7 +11,7 @@ once you see it:
 `run_eval` does exactly that and returns a `Report` you can summarize, save,
 reload, and diff against another run. The "system under test" (`task`) is just a
 function `str -> str`: it can be a plain Python function (example 01), a single
-LLM call (example 05), or an entire RAG pipeline — the runner doesn't care.
+LLM call (example 05), or an entire RAG pipeline. The runner doesn't care.
 
 Pure stdlib, so importing it costs nothing.
 """
@@ -60,7 +59,7 @@ class Report:
         return sum(scores) / len(scores) if scores else 0.0
 
     def summary(self) -> dict:
-        """Per-scorer pass rate and mean score — the numbers you compare runs on."""
+        """Per-scorer pass rate and mean score: the numbers you compare runs on."""
         return {
             name: {"pass_rate": self.pass_rate(name), "mean_score": self.mean_score(name)}
             for name in self.scorer_names
@@ -73,7 +72,7 @@ class Report:
             print(f"  {name:<20} pass {self.pass_rate(name):.0%}   mean {self.mean_score(name):.3f}")
 
     def failures(self, scorer: str) -> list[Result]:
-        """The examples that failed a given scorer — where you go to learn."""
+        """The examples that failed a given scorer: where you go to learn."""
         return [r for r in self.results if not r.scores[scorer].passed]
 
     def save(self, path: str) -> None:

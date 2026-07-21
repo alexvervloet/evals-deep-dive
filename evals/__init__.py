@@ -1,15 +1,15 @@
 """
-evals — a small, from-scratch library for evaluating LLM apps.
+evals: a small, from-scratch library for evaluating LLM apps.
 
 Everything here is built to be *read*, not just used. The pieces map to the four
 parts of any eval (dataset -> task -> scorer -> report):
 
-  dataset.py    — examples to test against (a "golden set")
-  scorers.py    — code-based scorers: did the output meet a checkable bar?
-  judges.py     — model-graded scorers: LLM-as-judge (pointwise + pairwise)
-  runner.py     — the loop: run a task over a dataset, score it, build a Report
-  metrics.py    — turn raw results into numbers (accuracy, F1, pass@k, CIs)
-  providers.py  — the ONLY provider-specific file: generate()
+  dataset.py    examples to test against (a "golden set")
+  scorers.py    code-based scorers: did the output meet a checkable bar?
+  judges.py     model-graded scorers: LLM-as-judge (pointwise + pairwise)
+  runner.py     the loop: run a task over a dataset, score it, build a Report
+  metrics.py    turn raw results into numbers (accuracy, F1, pass@k, CIs)
+  providers.py  the ONLY provider-specific file: generate()
 
 Import what you need, e.g.:
 

@@ -1,10 +1,9 @@
 """
-evals/providers.py — the ONLY file that talks to a model provider.
-==================================================================
+evals/providers.py: the ONLY file that talks to a model provider.
 
 Evals are provider-agnostic: a dataset, a scorer, a metric, and a report don't
-care who served the model. So we hide the one provider-specific call — turning a
-prompt into an answer (`generate`) — behind a single function. Everything else in
+care who served the model. So we hide the one provider-specific call, turning a
+prompt into an answer (`generate`), behind a single function. Everything else in
 `evals/` and `examples/` is pure evaluation logic.
 
 Pick your stack with `PROVIDER` in `.env`:
@@ -43,7 +42,7 @@ def required_keys() -> list[str]:
 
 
 def describe() -> str:
-    """One-line summary of the active stack — handy for examples to print."""
+    """One-line summary of the active stack, handy for examples to print."""
     p = provider_name()
     if p == "openai":
         return f"openai  (chat={_OPENAI_CHAT})"
@@ -87,7 +86,7 @@ def _anthropic_client():
 def generate(system: str, user: str, temperature: float = 0.0, max_tokens: int = 512) -> str:
     """Turn a (system, user) prompt into a text answer, normalized to a string.
 
-    `temperature` defaults to 0 for repeatability — important when the thing
+    `temperature` defaults to 0 for repeatability, which matters when the thing
     you're measuring should not move run-to-run just because of sampling noise.
     """
     p = provider_name()

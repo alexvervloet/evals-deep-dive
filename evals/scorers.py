@@ -1,18 +1,17 @@
 """
-evals/scorers.py — code-based scorers.
-======================================
+evals/scorers.py: code-based scorers.
 
 A *scorer* takes the system's output (and the Example it came from) and returns a
 `Score`: did it meet the bar, as a 0–1 number plus a human-readable detail.
 
 The scorers here are **code-based**: plain Python, deterministic, free, and
-offline. Reach for these first — they're cheaper and more reliable than asking a
+offline. Reach for these first; they're cheaper and more reliable than asking a
 model to grade. Only when a question genuinely needs judgement ("is this summary
 faithful?") do you escalate to an LLM judge (see judges.py).
 
 A scorer is just `Callable[[str, Example], Score]`. Some take no configuration
 (`exact_match`); others are *factories* that return a configured scorer
-(`matches_regex(r"...")`, `numeric_close(0.5)`) — a small, useful Python pattern.
+(`matches_regex(r"...")`, `numeric_close(0.5)`), a small, useful Python pattern.
 """
 
 import json
@@ -34,7 +33,7 @@ class Score:
 
 def exact_match(output: str, example: Example) -> Score:
     """Output equals the expected answer exactly (after trimming whitespace).
-    The strictest scorer — perfect for labels and classification."""
+    The strictest scorer, perfect for labels and classification."""
     want = (example.expected or "").strip()
     got = output.strip()
     ok = got == want
@@ -43,7 +42,7 @@ def exact_match(output: str, example: Example) -> Score:
 
 def contains_expected(output: str, example: Example) -> Score:
     """The expected text appears somewhere in the output (case-insensitive).
-    Looser than exact match — good when the answer is embedded in prose."""
+    Looser than exact match, good when the answer is embedded in prose."""
     want = (example.expected or "").lower()
     ok = want in output.lower()
     return Score(ok, 1.0 if ok else 0.0, f"expected {'found' if ok else 'MISSING'}: {want!r}")

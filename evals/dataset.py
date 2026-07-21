@@ -1,6 +1,5 @@
 """
-evals/dataset.py — the examples you test against (a "golden set").
-==================================================================
+evals/dataset.py: the examples you test against (a "golden set").
 
 An eval is only as good as the data you run it on. A dataset here is just a list
 of `Example`s, each with:
@@ -16,7 +15,7 @@ Two flavors of eval fall out of whether `expected` is present:
   - reference-free: you don't have a gold answer, so you judge the output on its
     own merits (is it valid JSON? does an LLM judge rate it well?).
 
-Building a good dataset is the hard, unglamorous, highest-leverage part of evals —
+Building a good dataset is the hard, unglamorous, highest-leverage part of evals 
 more than any clever metric. Start tiny and real (10 hand-checked examples beats
 1000 sloppy ones), cover the cases you actually care about, and grow it from real
 failures you find in production.

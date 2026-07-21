@@ -1,21 +1,20 @@
 """
-evals/metrics.py — turn raw results into numbers you can act on.
-================================================================
+evals/metrics.py: turn raw results into numbers you can act on.
 
 Scorers tell you about one output. Metrics aggregate across the whole dataset
 into the numbers you actually report and compare:
 
-  - pass_rate / accuracy — the headline "how often is it right?"
-  - precision / recall / F1 — for classification, where *which kind* of error
+  - pass_rate / accuracy: the headline "how often is it right?"
+  - precision / recall / F1: for classification, where *which kind* of error
     matters (a spam filter that flags everything has perfect recall, awful
     precision).
-  - pass@k — for tasks you sample several times: did at least one of k tries pass?
-  - mean_std / confidence_interval — because LLM outputs vary run to run, a single
+  - pass@k: for tasks you sample several times, did at least one of k tries pass?
+  - mean_std / confidence_interval: because LLM outputs vary run to run, a single
     number is a point estimate; you want the spread.
-  - compare — the question that matters in practice: is run B *really* better than
+  - compare: the question that matters in practice, is run B *really* better than
     run A, or is the gap just noise?
 
-All pure math, no API calls — this module is offline.
+All pure math, no API calls. This module is offline.
 """
 
 import math
@@ -39,7 +38,7 @@ def precision_recall_f1(predicted: list, expected: list, positive_label) -> dict
 
     precision = of the ones we *called* positive, how many were? (penalizes false
     alarms). recall = of the *actually* positive ones, how many did we catch?
-    (penalizes misses). F1 is their harmonic mean — one number balancing both.
+    (penalizes misses). F1 is their harmonic mean: one number balancing both.
     """
     tp = sum(p == positive_label and e == positive_label for p, e in zip(predicted, expected))
     fp = sum(p == positive_label and e != positive_label for p, e in zip(predicted, expected))
@@ -56,7 +55,7 @@ def pass_at_k(attempts_per_example: list[list[bool]], k: int) -> float:
 
     `attempts_per_example[i]` is the list of pass/fail booleans for example i.
     (This is the simple empirical estimator; the rigorous unbiased version from
-    the Codex paper corrects for the number of samples — a refinement, not a
+    the Codex paper corrects for the number of samples, a refinement, not a
     different idea.)"""
     if not attempts_per_example:
         return 0.0
@@ -77,7 +76,7 @@ def confidence_interval(values: list[float], z: float = 1.96) -> tuple[float, fl
     """An approximate confidence interval for the mean (default ~95%, z=1.96).
 
     interval = mean ± z * (std / sqrt(n)). Wider with fewer samples or more
-    spread — which is exactly why running an eval once and trusting the number is
+    spread, which is exactly why running an eval once and trusting the number is
     risky. (Normal approximation; fine for teaching, use a t-distribution or
     bootstrap for small-n rigor.)"""
     if len(values) < 2:

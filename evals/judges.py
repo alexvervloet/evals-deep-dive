@@ -1,10 +1,9 @@
 """
-evals/judges.py — model-graded scorers (LLM-as-judge).
-======================================================
+evals/judges.py: model-graded scorers (LLM-as-judge).
 
 Some qualities can't be checked with code: "is this summary faithful?", "is this
 answer helpful?", "which of these two replies is better?". For those you use the
-model itself as the grader — an *LLM judge*.
+model itself as the grader: an *LLM judge*.
 
 Two shapes, both here:
 
@@ -14,7 +13,7 @@ Two shapes, both here:
     more reliable at *relative* judgements than absolute ones, so pairwise
     win-rate is usually the better tool for comparing two systems.
 
-⚠️ Judges are themselves models, so they have biases — they can favour the first
+Judges are themselves models, so they have biases. They can favour the first
 option, longer answers, or their own style. Treat a judge as a system to be
 evaluated, not gospel: calibrate it against human labels, and mitigate known
 biases (example 08 shows position bias and the swap-and-average fix). Grading runs
@@ -36,7 +35,7 @@ _POINTWISE_SYSTEM = (
 def judge_pointwise(question: str, answer: str, rubric: str, reference: str | None = None) -> Score:
     """Grade one answer 1–5 against a rubric; returned as a 0–1 Score.
 
-    Pass a `reference` answer when you have one — the judge grades far more
+    Pass a `reference` answer when you have one; the judge grades far more
     consistently when it can compare against a known-good answer than when judging
     in a vacuum.
     """
@@ -55,7 +54,7 @@ _FAITHFULNESS_SYSTEM = (
     "You judge whether an ANSWER is faithful to (fully grounded in) the provided "
     "CONTEXT. An answer is faithful only if EVERY factual claim it makes is supported "
     "by the context. A claim that is true in the real world but NOT present in the "
-    "context still makes the answer unfaithful — the test is grounding, not truth. "
+    "context still makes the answer unfaithful; the test is grounding, not truth. "
     "Refusing or saying the context doesn't cover it, when it genuinely doesn't, IS "
     "faithful. Rate 1 (claims unsupported by the context) to 5 (every claim grounded). "
     "Reply with ONLY the integer."
@@ -67,8 +66,8 @@ def judge_faithfulness(context: str, answer: str) -> Score:
 
     This is the canonical RAG failure that answer-correctness and retrieval metrics
     both miss: a fluent, even *true* answer that asserts something the retrieved
-    context never supports. Faithfulness needs no gold answer — only the context the
-    model was given — so it's a *reference-free* scorer. (Related names: groundedness,
+    context never supports. Faithfulness needs no gold answer, only the context the
+    model was given, so it's a *reference-free* scorer. (Related names: groundedness,
     the "faithfulness" leg of the RAG eval triad.)
     """
     user = f"CONTEXT:\n{context}\n\nANSWER:\n{answer}\n\nFaithfulness score (1-5):"
@@ -87,7 +86,7 @@ _PAIRWISE_SYSTEM = (
 def judge_pairwise(question: str, answer_a: str, answer_b: str, rubric: str = "overall quality and correctness") -> str:
     """Ask the judge which answer is better. Returns 'A', 'B', or 'TIE'.
 
-    Relative judgements are more reliable than absolute scores — but watch for
+    Relative judgements are more reliable than absolute scores, but watch for
     *position bias* (a tendency to favour whichever answer is shown first). To
     neutralize it, run both orders and average; see example 08.
     """
