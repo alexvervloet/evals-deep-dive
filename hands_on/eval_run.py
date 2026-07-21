@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-eval_run.py — the capstone: a tiny eval runner you'd actually use.
-=================================================================
+eval_run.py: the capstone: a tiny eval runner you'd actually use.
 
 Everything in the repo comes together into one command-line tool that runs an
-eval *suite* (a task + dataset + scorers), prints a scored report, and — the part
-that makes evals a habit instead of a one-off — lets you **save a run, diff a new
+eval *suite* (a task + dataset + scorers), prints a scored report, and, the part
+that makes evals a habit instead of a one-off, lets you **save a run, diff a new
 run against it, and fail when quality drops**. That last part is how evals become
 a regression gate in CI.
 
 Three built-in suites:
-  sentiment  — LLM classifier vs labels         (code scorer: exact_match)
-  qa         — LLM answers, graded by a judge    (code + LLM-judge scorers)
-  extraction — LLM extracts JSON                 (valid-JSON + required-keys)
+  sentiment  LLM classifier vs labels         (code scorer: exact_match)
+  qa         LLM answers, graded by a judge    (code + LLM-judge scorers)
+  extraction LLM extracts JSON                 (valid-JSON + required-keys)
 
 Examples
 --------
@@ -175,7 +174,7 @@ def main(argv) -> int:
     assert report is not None
 
     # Per-scorer summary for the (last) run.
-    table = Table(title=f"Results — {len(report.results)} examples")
+    table = Table(title=f"Results: {len(report.results)} examples")
     table.add_column("Scorer", style="cyan")
     table.add_column("Pass rate", justify="right")
     table.add_column("Mean score", justify="right")
@@ -202,8 +201,8 @@ def main(argv) -> int:
     #
     # A note on the "± margin" you'll see here. It's the 95% confidence interval
     # on the *difference* between the two runs' pass rates (see evals.compare).
-    # On these teaching datasets it comes out startlingly wide — often ±40% or
-    # more — and that is the honest answer, not a defect. Two things blow it up:
+    # On these teaching datasets it comes out startlingly wide, often ±40% or
+    # more, and that is the honest answer, not a defect. Two things blow it up:
     #   1. Tiny n. The margin shrinks as ~1/sqrt(n). With ~10 examples one
     #      example flipping is a 10-point swing, so the band is enormous. At
     #      n=100 it's ~3x tighter; at n=1000, ~10x.
