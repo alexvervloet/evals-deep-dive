@@ -23,7 +23,7 @@ measuring the *task*); the LLM judges default to 0 so grading is stable. Example
 import os
 from functools import lru_cache
 
-_OPENAI_CHAT = "gpt-4o-mini"
+_OPENAI_CHAT = "gpt-5.4-nano"
 _CLAUDE_CHAT = "claude-haiku-4-5"
 
 _KEYS = {
@@ -94,7 +94,7 @@ def generate(system: str, user: str, temperature: float = 0.0, max_tokens: int =
         resp = _openai_client().chat.completions.create(
             model=_OPENAI_CHAT,
             temperature=temperature,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
