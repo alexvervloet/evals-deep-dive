@@ -21,6 +21,7 @@ measuring the *task*); the LLM judges default to 0 so grading is stable. Example
 """
 
 import os
+import sys
 from functools import lru_cache
 
 _OPENAI_CHAT = "gpt-5.4-nano"
@@ -56,8 +57,6 @@ def ensure_ready() -> None:
 
     Call this at the top of any script *after* `load_dotenv()`.
     """
-    import sys
-
     p = provider_name()
     if p not in _KEYS:
         sys.exit(f"PROVIDER={p!r} is not recognized. Set PROVIDER=openai or claude in .env.")
