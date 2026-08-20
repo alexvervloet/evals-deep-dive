@@ -3,4 +3,4 @@
 {"input": "Contact: Priya Patel <priya@startup.io>. We're interested in the Free tier for now.", "expected": "{\"name\": \"Priya Patel\", \"email\": \"priya@startup.io\", \"plan\": \"Free\"}"}
 {"input": "Sign me up! Carlos Ruiz here, carlos_ruiz@mail.co, going with Plus.", "expected": "{\"name\": \"Carlos Ruiz\", \"email\": \"carlos_ruiz@mail.co\", \"plan\": \"Plus\"}"}
 {"input": "This is Mei Chen (mei.chen@corp.com). Put us on Enterprise, please.", "expected": "{\"name\": \"Mei Chen\", \"email\": \"mei.chen@corp.com\", \"plan\": \"Enterprise\"}"}
-{"input": "Hello from Tom O'Brien — tom.obrien@firm.net — the Team plan looks right.", "expected": "{\"name\": \"Tom O'Brien\", \"email\": \"tom.obrien@firm.net\", \"plan\": \"Team\"}"}
+{"input": "Hello from Tom O'Brien, tom.obrien@firm.net, the Team plan looks right.", "expected": "{\"name\": \"Tom O'Brien\", \"email\": \"tom.obrien@firm.net\", \"plan\": \"Team\"}"}

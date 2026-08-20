@@ -4,7 +4,7 @@ __pycache__/
 .venv/
 venv/
 
-# Secrets — never commit your real keys
+# Secrets: never commit your real keys
 .env
 
 # Editor / local history
