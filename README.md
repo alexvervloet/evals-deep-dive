@@ -423,7 +423,7 @@ at the top, and run it directly.
 
 ## The series
 
-This is one of sixteen standalone, hands-on deep dives into building with LLM APIs: eight core, plus eight bonus dives.
+This is one of the standalone, hands-on deep dives into building with LLM APIs: eight core, plus the bonus dives listed below.
 Each one stands on its own, with its own setup, examples, and capstone, and they
 all share the same house style: provider-agnostic, built from scratch (no
 frameworks), offline-first examples, and a real capstone. Do them in any order;
@@ -450,6 +450,9 @@ this sequence builds naturally:
 - [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive): low-latency speech-to-speech agents
 - [Observability](https://github.com/alexvervloet/observability-deep-dive): watch a running app over time: drift, quality, alerting, the flywheel
 - [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
+- [GenAI Security](https://github.com/alexvervloet/genai-security-deep-dive): treat the model as an untrusted principal: identity, supply chain, isolation, budgets, release gates
+- [Inference Platform Engineering](https://github.com/alexvervloet/inference-platform-deep-dive): turn finite GPU memory and a request queue into latency, throughput, and a fleet size you can defend
+- [Testing & Delivery](https://github.com/alexvervloet/testing-and-delivery-deep-dive): decide whether a build has earned promotion: evidence, gates, staged rollout, rollback
 - [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
 
 And the whole series lands in one codebase in the
