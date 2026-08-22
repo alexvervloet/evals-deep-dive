@@ -11,7 +11,7 @@ What each answers:
                          alarms vs misses)
   - pass@k:             with several tries, did at least one pass?
   - confidence interval: how much would this number wobble on a re-run?
-  - compare:            is run B really better than A, or is it noise?
+  - compare:            does a fixed-horizon independent-sample interval clear zero?
 
 Run it:
 
@@ -59,17 +59,18 @@ lo, hi = evals.confidence_interval(runs)
 print(f"\nFive re-runs of an eval: {runs}")
 print(f"  mean ≈ {sum(runs) / len(runs):.3f}, 95% CI ≈ [{lo:.3f}, {hi:.3f}]")
 
-# Comparing two systems honestly.
+# A first screening comparison: independent samples, one fixed look.
 baseline = [0.80, 0.78, 0.81, 0.79]
 candidate = [0.83, 0.82, 0.85, 0.84]
 cmp = evals.compare(baseline, candidate)
-verdict = "a REAL improvement" if cmp["likely_real"] else "within the noise"
+verdict = "clears this interval" if cmp["likely_real"] else "does not clear this interval"
 print(
     f"\nCandidate vs baseline: {cmp['mean_b']:.3f} vs {cmp['mean_a']:.3f} "
     f"(diff {cmp['diff']:+.3f} ± {cmp['margin']:.3f}) -> {verdict}"
 )
 
 print(
-    "\nThat last line is the discipline: don't ship a '+2%' that's inside the "
-    "margin of error. A difference you can't distinguish from noise isn't a win."
+    "\nThat last line is a screening result, not release authorization. If both "
+    "systems answered the same cases, preserve those pairs; then predeclare the "
+    "minimum useful effect, metrics, and looks. Example 14 builds that decision."
 )
