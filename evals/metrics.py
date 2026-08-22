@@ -11,8 +11,9 @@ into the numbers you actually report and compare:
   - pass@k: for tasks you sample several times, did at least one of k tries pass?
   - mean_std / confidence_interval: because LLM outputs vary run to run, a single
     number is a point estimate; you want the spread.
-  - compare: the question that matters in practice, is run B *really* better than
-    run A, or is the gap just noise?
+  - compare: a first fixed-horizon, independent-sample approximation to whether
+    run B differs from run A. ``decision.py`` handles paired case outcomes,
+    practical thresholds, power, multiplicity, and repeated looks.
 
 All pure math, no API calls. This module is offline.
 """
@@ -88,13 +89,19 @@ def confidence_interval(values: list[float], z: float = 1.96) -> tuple[float, fl
 
 
 def compare(a_values: list[float], b_values: list[float], z: float = 1.96) -> dict:
-    """Is B different from A, or is the gap just noise?
+    """Screen whether independent fixed-horizon samples B and A differ.
 
     Returns the means, the difference (B − A), the margin of error on that
     difference, and `likely_real`: True when the difference is larger than the
-    margin (its confidence interval excludes zero). This is the honest way to
-    decide whether a prompt change helped, instead of cheering a +2% that's within
-    the noise."""
+    margin (its normal-approximation interval excludes zero).
+
+    This intentionally small first lesson treats the two lists as independent and
+    spends one unadjusted error budget at one fixed horizon. It does not justify a
+    release decision when both systems answered the same cases, when several
+    metrics were inspected, or when results were checked repeatedly. Preserve
+    per-case pairs and use ``paired_bootstrap`` plus a predeclared decision policy
+    from :mod:`evals.decision` for those cases.
+    """
     ma, sa = mean_std(a_values)
     mb, sb = mean_std(b_values)
     na, nb = len(a_values), len(b_values)
