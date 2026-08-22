@@ -106,12 +106,13 @@ class PlanningTests(unittest.TestCase):
         second = minimum_detectable_effect(400, 0.2)
         self.assertAlmostEqual(second, first / 2.0)
 
-    def test_more_metrics_and_looks_raise_the_planned_mde(self) -> None:
+    def test_each_multiplicity_dimension_raises_the_planned_mde(self) -> None:
         fixed = minimum_detectable_effect(400, 0.2)
-        adjusted = minimum_detectable_effect(
-            400, 0.2, comparisons=3, looks=4
-        )
-        self.assertGreater(adjusted, fixed)
+        more_metrics = minimum_detectable_effect(400, 0.2, comparisons=3)
+        more_looks = minimum_detectable_effect(400, 0.2, looks=4)
+
+        self.assertGreater(more_metrics, fixed)
+        self.assertGreater(more_looks, fixed)
 
     def test_required_sample_rounds_up_to_the_requested_sensitivity(self) -> None:
         target = 0.04
@@ -172,6 +173,28 @@ class SequentialTests(unittest.TestCase):
         )
         self.assertAlmostEqual(looks[0].look_alpha, 0.05 / 6)
         self.assertAlmostEqual(looks[-1].cumulative_family_alpha, 0.05)
+
+    def test_statistical_but_sub_practical_gain_does_not_stop_for_benefit(self) -> None:
+        control = [0.5] * 200
+        candidate = [0.52 + (index % 5 - 2) * 0.002 for index in range(200)]
+
+        looks = sequential_paired_test(
+            control,
+            candidate,
+            look_sizes=(40, 100, 200),
+            minimum_practical_effect=0.03,
+        )
+
+        self.assertEqual(len(looks), 3)
+        self.assertTrue(all(look.lower > 0.0 for look in looks))
+        self.assertEqual(
+            [look.status for look in looks],
+            [
+                SequentialStatus.CONTINUE,
+                SequentialStatus.CONTINUE,
+                SequentialStatus.COMPLETE_INCONCLUSIVE,
+            ],
+        )
 
     def test_strong_harm_has_a_distinct_terminal_state(self) -> None:
         control = [0.5] * 60
