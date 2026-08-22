@@ -8,8 +8,8 @@ How to use it: work the section first, then come back. **Commit to an answer
 before you run or reveal.** The prediction is where the learning happens, even
 (especially) when you're wrong. Answers are hidden behind ▸ toggles.
 
-> Examples 01-04 are **(offline)**: no API call, no cost. The rest make small,
-> cheap calls; example 09 makes the most.
+> Examples 01–04, 10–12, and 14 are **(offline)**: no API call, no cost. The
+> remaining examples make small calls; example 09 makes the most.
 
 ---
 
@@ -66,14 +66,15 @@ accuracy while being useless. Precision/recall/F1 expose what one number hides.
 </details>
 
 **Do.** In `examples/04_metrics.py`, change `candidate` so its scores barely beat
-`baseline`. Does `compare()` still call it a real improvement? What does that
-teach about "+2%" claims?
+`baseline`. Does the fixed-horizon interval still clear zero? Why would either
+result remain insufficient to authorize a release?
 
 <details><summary>▸ Answer</summary>
 
-Once the gap shrinks into the margin of error, `likely_real` flips to False. A
-small improvement that's inside the noise isn't a result you can trust; you'd
-need more data or runs to separate it from chance.
+Once the gap shrinks into the margin, `likely_real` flips to False: this screen
+cannot distinguish it from sampling variation. If it stays True, the comparison
+still discarded per-case pairing and never accounted for a practical threshold,
+multiple metrics, or repeated looks. Example 14 supplies that decision contract.
 </details>
 
 ---
@@ -145,13 +146,13 @@ the same pass rate? What does that mean for trusting a single eval number?
 <details><summary>▸ Answer</summary>
 
 Probably not; the score wobbles run to run. So one number is a point estimate, not
-the truth. Report a mean with a confidence interval, and to claim system B beats A,
-run enough times that the difference clears the noise (`compare()`).
+the truth. Report a mean with an interval. Here `compare()` is only a fixed-horizon
+screen over independent run scores; paired release evidence comes in Example 14.
 </details>
 
 ---
 
-## Going further: three more kinds of eval **(offline)**
+## Going further
 
 **Recall (trajectory, `10`).** The "lucky" agent scores 100% on the final answer but
 0% on tool use. What does that reveal, and why isn't answer-accuracy enough for an
@@ -176,14 +177,15 @@ number. A low kappa means your gold labels are noisy, so fix the guidelines and
 re-annotate before trusting any score built on them.
 </details>
 
-**Recall (online eval, `12`).** Variant B beats A on satisfaction with a significant
-gap. Name the two conditions that must *both* hold before you ship B.
+**Recall (online eval, `12`, offline).** The headline screen favors B on
+satisfaction. Why is that not yet a ship verdict?
 
 <details><summary>▸ Answer</summary>
 
-(1) The difference must clear the **margin of error** (a small sample can't prove a
-real gap), and (2) no **guardrail** metric (latency, refusal rate, cost) may have
-regressed. A headline win that quietly breaks a guardrail is still a regression.
+The fixed-horizon screen only says its interval cleared zero. The effect must also
+clear a predeclared practical threshold, every inspected metric and look must share
+one error budget, and no guardrail may regress. Example 14 makes the first three
+requirements executable; the guardrail remains a separate release condition.
 </details>
 
 **Predict (faithfulness, `13`).** A RAG answer says "the reset link is valid for 30
@@ -201,6 +203,53 @@ exactly what correctness misses. The fix at answer time is the grounded prompt:
 answer only from context, decline when it's silent.
 </details>
 
+### Decision statistics (`14`, offline)
+
+**Predict, then run.** The first candidate's paired interval is entirely above
+zero but entirely below the +3 percentage-point practical threshold. Which
+evidence state and decision should appear?
+
+<details><summary>▸ Answer</summary>
+
+`statistical_improvement_only` and **HOLD**. Enough data can measure a tiny effect
+precisely; precision does not make the effect worth migration cost or release risk.
+</details>
+
+**Calculate.** With variance and error controls held fixed, what happens to MDE
+when paired sample size grows from 100 to 400? Why?
+
+<details><summary>▸ Answer</summary>
+
+It halves, because the normal planning approximation scales as
+`difference_std / sqrt(pairs)`. Four times the pairs buys twice the sensitivity,
+not four times.
+</details>
+
+**Predict.** Four independent null metrics each tested at alpha .05 have what
+chance of at least one false positive? Why does the example allocate .003125 to
+each of sixteen metric-look decisions instead?
+
+<details><summary>▸ Answer</summary>
+
+`1 - 0.95**4 ≈ 18.5%`. Dividing the family alpha `.05` by `4 metrics × 4 looks`
+gives `.003125` per decision; Bonferroni's union bound keeps the whole declared
+family at or below five percent even when metrics and looks are dependent. It is
+conservative, which is the price of the simple guarantee.
+</details>
+
+**Break, diagnose, repair.** Shuffle only the candidate score list before calling
+`paired_bootstrap`. The function cannot detect that both lists still have equal
+length. What invariant did the caller violate, and what is the production repair?
+
+<details><summary>▸ Answer</summary>
+
+Position no longer names the same case in both arms, so the computed differences
+are meaningless even though every number is valid. Join control and candidate by
+a trusted unique case (or user/session) ID, reject missing and duplicate matches,
+then pass the aligned scores. Length validation prevents truncation; it cannot
+prove identity alignment the caller discarded.
+</details>
+
 ---
 
 ## Capstone: `eval_run.py`
@@ -211,10 +260,10 @@ numbers differ slightly. Why is that the *right* answer?
 
 <details><summary>▸ Answer</summary>
 
-Because run-to-run variation makes small deltas meaningless. `compare()` only flags
-a change as real when it exceeds the margin of error, so the tool refuses to cry
-"regression!" (or "improvement!") over noise. That restraint is what makes an
-automated gate trustworthy.
+Because run-to-run variation makes small deltas weak evidence. `compare()` keeps
+this teaching gate from reacting to every numeric change, but it remains an
+independent-sample fixed-horizon approximation. A production gate over the same
+cases should retain per-case results and apply Example 14's predeclared policy.
 </details>
 
 **Stretch.** Wire `secrun python hands_on/eval_run.py sentiment --fail-under 0.7` into a
