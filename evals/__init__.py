@@ -9,6 +9,7 @@ parts of any eval (dataset -> task -> scorer -> report):
   judges.py     model-graded scorers: LLM-as-judge (pointwise + pairwise)
   runner.py     the loop: run a task over a dataset, score it, build a Report
   metrics.py    turn raw results into numbers (accuracy, F1, pass@k, CIs)
+  decision.py   paired bootstrap, power, multiplicity, sequential decisions
   providers.py  the ONLY provider-specific file: generate()
 
 Import what you need, e.g.:
@@ -17,6 +18,20 @@ Import what you need, e.g.:
 """
 
 from .dataset import Example, load_jsonl
+from .decision import (
+    EffectEvidence,
+    PairedBootstrapInterval,
+    SequentialLook,
+    SequentialStatus,
+    bonferroni_alpha,
+    classify_effect,
+    independent_familywise_risk,
+    minimum_detectable_effect,
+    paired_bootstrap,
+    paired_differences,
+    required_sample_size,
+    sequential_paired_test,
+)
 from .judges import judge_faithfulness, judge_pairwise, judge_pointwise
 from .metrics import (
     accuracy,
@@ -42,6 +57,18 @@ from .scorers import (
 __all__ = [
     "Example",
     "load_jsonl",
+    "EffectEvidence",
+    "PairedBootstrapInterval",
+    "SequentialLook",
+    "SequentialStatus",
+    "paired_differences",
+    "paired_bootstrap",
+    "classify_effect",
+    "bonferroni_alpha",
+    "independent_familywise_risk",
+    "minimum_detectable_effect",
+    "required_sample_size",
+    "sequential_paired_test",
     "Score",
     "exact_match",
     "contains_expected",
