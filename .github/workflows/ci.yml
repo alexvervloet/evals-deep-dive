@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-course:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install the course
+        run: python -m pip install -r requirements.txt
+
+      - name: Check setup
+        env:
+          OPENAI_API_KEY: sk-ci-placeholder
+        run: |
+          cp .env.example .env
+          python check_setup.py
+
+      - name: Compile every tracked Python path
+        run: |
+          python - <<'PY'
+          import py_compile
+          import subprocess
+
+          paths = subprocess.check_output(
+              ["git", "ls-files", "*.py"], text=True
+          ).splitlines()
+          if not paths:
+              raise SystemExit("no tracked Python paths found")
+          for path in paths:
+              py_compile.compile(path, doraise=True)
+          print(f"compiled tracked Python paths: {len(paths)}")
+          PY
+
+      - name: Run a nonempty test suite
+        run: |
+          python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          count = suite.countTestCases()
+          print(f"discovered tests: {count}")
+          if count == 0:
+              raise SystemExit("test discovery found zero tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.wasSuccessful():
+              raise SystemExit(1)
+          PY
+
+      - name: Run tests with assertions optimized out
+        run: python -O -m unittest discover -s tests -v
+
+      - name: Run every offline lesson
+        shell: bash
+        run: |
+          for example in \
+            examples/01_anatomy.py \
+            examples/02_code_scorers.py \
+            examples/03_dataset.py \
+            examples/04_metrics.py \
+            examples/10_agent_trajectory.py \
+            examples/11_human_annotation.py \
+            examples/12_online_eval.py \
+            examples/14_decision_statistics.py
+          do
+            echo "running ${example}"
+            python "${example}"
+          done
+
+      - name: Verify the decision lesson is deterministic
+        shell: bash
+        run: |
+          python examples/14_decision_statistics.py > first-decision-output.txt
+          python examples/14_decision_statistics.py > second-decision-output.txt
+          cmp first-decision-output.txt second-decision-output.txt
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: python
+      - uses: github/codeql-action/analyze@v4
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          deny-licenses: AGPL-3.0-only
