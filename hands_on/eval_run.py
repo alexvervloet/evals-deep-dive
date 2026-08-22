@@ -171,7 +171,8 @@ def main(argv) -> int:
                 f"[dim]run {i + 1}: {primary} pass rate {primary_rates[-1]:.0%}[/dim]"
             )
 
-    assert report is not None
+    if report is None:  # Defensive: max(1, args.runs) should make this unreachable.
+        raise RuntimeError("the eval loop completed without producing a report")
 
     # Per-scorer summary for the (last) run.
     table = Table(title=f"Results: {len(report.results)} examples")
