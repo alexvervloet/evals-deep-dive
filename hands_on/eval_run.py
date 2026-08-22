@@ -208,16 +208,21 @@ def main(argv) -> int:
     #      n=100 it's ~3x tighter; at n=1000, ~10x.
     #   2. Binary scores. Each score is 0 or 1, which carries the most variance
     #      possible. A graded (0.0-1.0) scorer or averaging over --runs is tighter.
-    # The lesson: with a handful of examples you *cannot* distinguish a real
-    # quality change from noise, so `likely_real` will call almost any diff
-    # "within noise". The fix is more data (or more runs), not a smaller margin.
+    # The lesson: with a handful of examples this fixed-horizon screen rarely
+    # clears its interval. More data can tighten the interval, but a release
+    # decision still needs Example 14's paired, practical, multiplicity-aware
+    # policy rather than a smaller margin or a stronger label here.
     if args.baseline:
         base = evals.Report.load(args.baseline)
         console.print(f"\n[bold]Diff vs baseline[/bold] ({args.baseline}):")
         if primary in base.scorer_names:
             base_rate = base.pass_rate(primary)
             cmp = evals.compare(base.scores_for(primary), report.scores_for(primary))
-            verdict = "REAL change" if cmp["likely_real"] else "within noise"
+            verdict = (
+                "clears this screening interval"
+                if cmp["likely_real"]
+                else "does not clear this screening interval"
+            )
             console.print(
                 f"  {primary}: {base_rate:.0%} -> {primary_rate:.0%} "
                 f"({cmp['diff']:+.0%} ± {cmp['margin']:.0%}, {verdict})"
