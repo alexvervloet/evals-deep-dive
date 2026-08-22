@@ -141,10 +141,10 @@ def main():
     if py and deps and keys:
         print(_c("All set! 🎉", "1;32"))
         print("Start here:  python examples/01_anatomy.py")
-        print("(Examples 01–04 are offline and need no key.)")
+        print("(Examples 01–04, 10–12, and 14 are offline and need no key.)")
         return 0
     print(_c("Not ready yet. Fix the ✗ items above, then run this again.", "1;31"))
-    print("(Examples 01–04 are offline, so you can start those without a key.)")
+    print("(Examples 01–04, 10–12, and 14 are offline, so you can start without a key.)")
     return 1
 
 
