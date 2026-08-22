@@ -7,8 +7,8 @@ example makes that visible and then does the honest thing with it.
 
   1. Run the same classifier eval several times at temperature 0.9 and watch the
      pass rate wobble. Report the mean with a confidence interval, not one number.
-  2. Compare two prompts across several runs each, and use `compare()` to decide
-     whether the difference is REAL or just noise.
+  2. Compare two independent sets of run-level scores at one fixed horizon and
+     use `compare()` as a first screen for whether the interval clears zero.
 
 This is the most expensive example (many calls). It uses all 10 rows so the hard
 (sarcasm/mixed-signal) rows produce genuine variance; turn `N` down to spend less,
@@ -76,13 +76,16 @@ print(f"  mean {sum(b_runs) / N:.0%}, 95% CI [{b_lo:.0%}, {b_hi:.0%}]\n")
 
 cmp = evals.compare(a_runs, b_runs)
 verdict = (
-    "a REAL difference" if cmp["likely_real"] else "within the noise (inconclusive)"
+    "clears this interval"
+    if cmp["likely_real"]
+    else "does not clear this interval (inconclusive)"
 )
 print(f"B − A = {cmp['diff']:+.0%} ± {cmp['margin']:.0%}  ->  {verdict}")
 
 print(
     "\nIf you'd run each prompt once, you might have 'seen' a winner that's pure "
-    "sampling noise. With small datasets and few runs the interval is wide, which "
-    "is the honest message: to claim an improvement, run enough to separate it "
-    "from the wobble."
+    "sampling noise. With small datasets and few runs the interval is wide. This "
+    "is a fixed-horizon screening approximation; Example 14 preserves paired "
+    "cases and predeclares practical effect, power, metrics, and repeated looks "
+    "before making a release decision."
 )
