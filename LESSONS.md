@@ -10,3 +10,13 @@
   `.venv/bin/python` from the start. CI should continue using the interpreter
   installed by `actions/setup-python`, where `python` is part of the documented
   runner environment.
+
+## Build CI inventories from tracked paths
+
+- **Expected:** The conceptual lesson names in the work plan would map directly
+  to example filenames when the CI command was written.
+- **Actual:** Three filenames used different, more specific names; a directory
+  listing caught the mismatch before commit.
+- **Next time:** Resolve every promised runnable path with `git ls-files` before
+  encoding an explicit CI inventory, then keep the explicit list so live examples
+  are not accidentally executed.
