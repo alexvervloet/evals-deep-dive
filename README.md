@@ -4,7 +4,7 @@ A hands-on playground for learning how to **evaluate LLM applications**, the ski
 that separates "it seems to work" from "I can prove this change made it better."
 You'll build a small eval framework from scratch and learn every moving part:
 datasets, code-based scorers, LLM-as-judge, the metrics that matter, judge bias,
-statistical significance, and regression gates, by building each one yourself. No
+paired decision statistics, and regression gates, by building each one yourself. No
 promptfoo, no OpenAI Evals, no Ragas; just enough code to *see* how evaluation
 works.
 
@@ -16,7 +16,7 @@ three trustworthy: once you can put a number on quality, you can improve it on
 purpose instead of by vibes.
 
 Like its siblings, it's meant to be walked through, not just read. Each section
-ends with something to run, and the first four run **offline and free**.
+ends with something to run; examples 01–04, 10–12, and 14 run **offline and free**.
 [EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each section.
 
 ---
@@ -65,9 +65,10 @@ The only file that knows which provider you picked is
 [evals/providers.py](evals/providers.py). (Evals never need embeddings, so unlike
 the RAG repo the `claude` stack needs only your Anthropic key, no Voyage.)
 
-> **Start before spending anything.** Examples 01–04 are completely offline 
-> no key, no cost. They cover the dataset → scorer → metric foundations. The rest
-> make small, cheap calls; example 09 makes the most.
+> **Start before spending anything.** Examples 01–04, 10–12, and 14 are completely
+> offline: no key, no cost. They cover foundations, agent and human evaluation,
+> online experiments, and release-decision statistics. The remaining examples make
+> small calls; example 09 makes the most.
 
 ---
 
@@ -143,10 +144,12 @@ python examples/04_metrics.py        # offline math
   alarms vs misses); accuracy alone can lie.
 - **pass@k**: for tasks you sample several times: did any of k tries pass?
 - **confidence intervals**: how much would this number wobble on a re-run?
-- **`compare()`**: the one that matters: is B *really* better than A, or noise?
+- **`compare()`**: a first fixed-horizon, independent-sample screen for whether an
+  interval clears zero.
 
-See [evals/metrics.py](evals/metrics.py). The discipline this buys you: never ship
-a "+2%" that sits inside the margin of error.
+See [evals/metrics.py](evals/metrics.py). It teaches the shape of uncertainty, but
+it is not a release decision: it discards pairing and does not account for a
+practical threshold, multiple metrics, or repeated looks. Example 14 adds those.
 
 ---
 
@@ -223,16 +226,17 @@ secrun python examples/09_nondeterminism.py
 
 This runs the same eval several times at temperature 0.7 to watch the score wobble,
 reports a mean with a confidence interval instead of one number, and uses
-`compare()` to decide whether two prompts *really* differ. (It's the costliest
-example; it uses a small slice and a few runs, so turn them down to spend less.)
+`compare()` as a fixed-horizon screen over independent run-level scores. (It's the
+costliest example; it uses a small slice and a few runs, so turn them down to spend
+less.) Example 14 handles the paired per-case release decision.
 
 ---
 
-## Going further: four more kinds of eval
+## Going further: five more kinds of eval
 
 The core loop scores a single output string. These extend it to the cases you hit in
-practice. The first three run **offline and free** (they're about *method*); the
-fourth (faithfulness) is a model-graded judge, so it makes small calls.
+practice. Four run **offline and free** (they're about *method*); faithfulness is a
+model-graded judge, so it makes small calls.
 
 ### Evaluating an agent's trajectory
 A right final answer can hide a broken process: the lucky guess, the forbidden tool
@@ -256,8 +260,8 @@ python examples/11_human_annotation.py
 ### Online evals: A/B testing on live traffic
 A passing offline score doesn't prove real users are better off. The complement is
 the **online eval**: split live traffic into A (control) and B (the change), compare
-an outcome metric you care about, and ship B only if the gap clears the margin of
-error *and* no guardrail (latency, refusals, cost) regressed.
+an outcome metric you care about, and screen whether the fixed-horizon gap clears
+its margin while checking that no guardrail (latency, refusals, cost) regressed.
 ```bash
 python examples/12_online_eval.py
 ```
@@ -272,6 +276,26 @@ and shows the loose prompt inventing plausible facts the context doesn't support
 ```bash
 secrun python examples/13_faithfulness.py
 ```
+
+### Decision statistics: when has a candidate earned release?
+
+Run control and candidate on the **same cases**, then keep those pairs. Example 14
+uses a paired bootstrap interval, distinguishes statistical evidence from a
+predeclared minimum practical effect, plans minimum detectable effect and sample
+size at a target power, allocates one family error budget across metrics and
+interim looks, and demonstrates a conservative sequential stop. Its first
+candidate is precisely better but too small to ship; the second continues at 100
+and 250 pairs before the full interval clears the practical boundary at 500.
+
+```bash
+python examples/14_decision_statistics.py        # offline
+```
+
+See [evals/decision.py](evals/decision.py). The teaching implementation uses a
+percentile bootstrap, normal planning intervals, and Bonferroni spending. Those
+choices are readable and conservative, not universal: clustered users, adaptive
+traffic, rare outcomes, or regulated decisions need a design validated for their
+sampling process.
 
 ---
 
@@ -299,20 +323,21 @@ secrun python hands_on/eval_run.py sentiment --fail-under 0.7
 
 Three built-in suites exercise the whole repo: `sentiment` (classifier + code
 scorer), `qa` (answers + LLM judge), and `extraction` (JSON + key checks). Read
-[hands_on/eval_run.py](hands_on/eval_run.py); the diff uses `compare()` so it only
-cries "regression" when a change clears the noise. **Suggested exercise:** wire
+[hands_on/eval_run.py](hands_on/eval_run.py); the diff uses `compare()` as a
+fixed-horizon screen, so it does not cry "regression" over every numeric change.
+**Suggested exercise:** wire
 `--fail-under` into a pre-commit hook, then watch a quality-tanking prompt change
 fail the build.
 
 > **The diff's `± margin` will look huge, often ±40% or more, and that's
-> honest, not a bug.** It's the 95% confidence interval on the *difference*
+> expected, not a bug.** It's the normal-approximation interval on the *difference*
 > between two runs' pass rates, and two things blow it up here: the datasets are
 > tiny (~10 examples, so the margin scales as ~1/√n and one example flipping is a
 > 10-point swing) and each score is binary 0/1 (maximum variance). The takeaway
-> *is* the lesson: with a handful of examples you genuinely can't tell a real
-> quality change from noise, so `compare()` will call almost any diff "within
-> noise." Shrink the margin with more data or more `--runs`, not by trusting a
-> smaller sample.
+> *is* the lesson: with a handful of examples this screen cannot separate a small
+> change from noise. Shrink the margin with more data or more `--runs`, not by
+> trusting a smaller sample. For a real release comparison over the same cases,
+> retain per-case scores and use the predeclared policy from Example 14.
 
 ---
 
@@ -354,7 +379,7 @@ the same operational care as the app it grades:
 | The judge model is called bare | Judge calls wrapped in **retries** and counted against a **cost budget** (judging at scale isn't free) |
 | Scores printed to the terminal | Results **logged and traced** over time, so you can see drift, not just today's number |
 | The dataset and judge prompt are files you edit in place | **Versioned** datasets and judge prompts, so a graded run is reproducible and diffable |
-| One run is a point estimate (Section 10) | The gate decides on **aggregates with thresholds**, run on every change, not a single sample |
+| The capstone diff compares aggregate run rates once | Preserve per-case pairs and predeclare practical effect, power, metric family, and look schedule before the gate sees outcomes |
 
 These shortcuts are right for learning and wrong for production. All seven
 concerns (observability, cost, reliability, caching, guardrails, prompt
@@ -378,6 +403,7 @@ evals/                      ← the from-scratch library (read it!)
   scorers.py                ← code-based scorers + the Score type
   judges.py                 ← LLM-as-judge: pointwise + pairwise
   metrics.py                ← accuracy, precision/recall/F1, pass@k, CIs, compare
+  decision.py               ← paired bootstrap, power, multiplicity, sequential tests
   runner.py                 ← run_eval + the Report (save / load / diff)
 datasets/                   ← small golden sets (JSONL)
   sentiment.jsonl           ← classification (labels)
@@ -397,8 +423,9 @@ examples/
   09_nondeterminism.py      ← variance, confidence intervals, is-it-real?
   10_agent_trajectory.py    ← grade an agent's steps, not just its answer (offline)
   11_human_annotation.py    ← annotator agreement & Cohen's kappa (offline)
-  12_online_eval.py         ← A/B testing on live traffic; significance + guardrails (offline)
+  12_online_eval.py         ← fixed-horizon A/B screen + guardrails (offline)
   13_faithfulness.py        ← reference-free groundedness judge for RAG (grounded vs loose)
+  14_decision_statistics.py ← paired release evidence, power, multiplicity, looks (offline)
 ```
 
 ---
