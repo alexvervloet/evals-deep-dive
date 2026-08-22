@@ -30,3 +30,13 @@
   that paid path and therefore could not expose it dynamically.
 - **Next time:** Pair `python -O` tests with a source scan of library, example, and
   capstone paths; reserve `assert` for test assertions, never runtime validation.
+
+## Match verification to the file type
+
+- **Expected:** A small commit loop could apply the same syntax command to each
+  changed file.
+- **Actual:** It sent `LESSONS.md` to `py_compile`; the commit was unaffected, but
+  the check was meaningless and failed on Markdown prose.
+- **Next time:** Select checks per artifact (`py_compile` for Python, a Markdown
+  link/style check for prose) instead of interpolating heterogeneous paths into one
+  command template.
