@@ -7,13 +7,14 @@ complement is the **online eval**: measure a change on *live traffic*, by splitt
 users into variant A (control) and variant B (the change) and comparing an outcome
 metric you actually care about: thumbs-up rate, task completion, retention.
 
-The discipline is the same one from example 09 (nondeterminism) and the `compare()`
-significance test from example 05's metrics: **a difference is only real if it's
-bigger than the noise.** Ship B over A only when the gap clears the margin of error
-and only if your *guardrail* metrics (latency, refusal rate, cost) didn't regress.
+The discipline is the same one from example 09 (nondeterminism): at a fixed horizon,
+`compare()` screens whether a difference clears its normal-approximation interval.
+That is necessary but not sufficient to ship B: the effect must also clear a
+predeclared practical threshold, share an error budget with every inspected metric
+and look, and leave *guardrail* metrics (latency, refusal rate, cost) intact.
 
-This script simulates outcomes for two variants, runs the significance test, shows a
-guardrail check, and demonstrates why **sample size** decides whether you can
+This script simulates outcomes for two variants, runs the fixed-horizon screen, shows
+a guardrail check, and demonstrates why **sample size** decides whether you can
 conclude anything. Pure arithmetic, offline and free. (In production the outcome
 booleans come from real user signals, not a simulation.)
 
@@ -43,7 +44,11 @@ def simulate(true_rate: float, n: int, seed: int) -> list[float]:
 
 def report_ab(label: str, a: list[float], b: list[float]) -> None:
     c = compare(a, b)
-    verdict = "SHIP B" if c["likely_real"] and c["diff"] > 0 else "keep A (gap is within the noise)"
+    verdict = (
+        "headline screen favors B"
+        if c["likely_real"] and c["diff"] > 0
+        else "headline screen is inconclusive"
+    )
     print(f"[{label}]  n={len(a)} per arm")
     print(f"  A satisfaction: {c['mean_a']:.1%}    B satisfaction: {c['mean_b']:.1%}")
     print(f"  difference (B-A): {c['diff']:+.1%}  ± {c['margin']:.1%} margin of error")
@@ -56,7 +61,7 @@ if __name__ == "__main__":
     # 1. Too few samples: the real +8% gap is buried in noise -> can't conclude.
     report_ab("small sample", simulate(0.60, 80, 1), simulate(0.68, 80, 2))
 
-    # 2. Enough samples: the same +8% gap now clears the margin -> ship it.
+    # 2. Enough samples: the same +8% gap now clears this headline screen.
     report_ab("large sample", simulate(0.60, 1500, 1), simulate(0.68, 1500, 2))
 
     # 3. A real win on the headline metric, but a GUARDRAIL regressed.
@@ -69,7 +74,7 @@ if __name__ == "__main__":
 
     print(
         "Takeaway: online evals measure the change on real traffic, where it counts.\n"
-        "Two rules carry over from offline: judge a difference against its margin of\n"
-        "error (small samples can't prove a real gap), and never ship a headline win\n"
-        "that quietly regresses a guardrail (latency, refusals, cost)."
+        "A fixed-horizon interval can screen out noise, but Example 14 adds the rest\n"
+        "of a decision: pairing, practical effect, power, and one error budget across\n"
+        "metrics and looks. Never ship a headline win that regresses a guardrail."
     )
