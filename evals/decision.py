@@ -31,10 +31,10 @@ class EffectEvidence(str, Enum):
     """State what an interval supports without turning uncertainty into “no effect.”"""
 
     PRACTICAL_IMPROVEMENT = "practical_improvement"
-    STATISTICAL_IMPROVEMENT = "statistical_improvement_only"
+    STATISTICAL_IMPROVEMENT_ONLY = "statistical_improvement_only"
     PRACTICALLY_EQUIVALENT = "practically_equivalent"
     INCONCLUSIVE = "inconclusive"
-    STATISTICAL_REGRESSION = "statistical_regression_only"
+    STATISTICAL_REGRESSION_ONLY = "statistical_regression_only"
     PRACTICAL_REGRESSION = "practical_regression"
 
 
@@ -215,9 +215,9 @@ def classify_effect(
     if interval.upper < -threshold:
         return EffectEvidence.PRACTICAL_REGRESSION
     if interval.lower > 0.0:
-        return EffectEvidence.STATISTICAL_IMPROVEMENT
+        return EffectEvidence.STATISTICAL_IMPROVEMENT_ONLY
     if interval.upper < 0.0:
-        return EffectEvidence.STATISTICAL_REGRESSION
+        return EffectEvidence.STATISTICAL_REGRESSION_ONLY
     if interval.lower >= -threshold and interval.upper <= threshold:
         return EffectEvidence.PRACTICALLY_EQUIVALENT
     return EffectEvidence.INCONCLUSIVE

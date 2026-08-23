@@ -73,10 +73,10 @@ class EvidenceTests(unittest.TestCase):
         threshold = 0.03
         cases = {
             _interval(0.04, 0.06): EffectEvidence.PRACTICAL_IMPROVEMENT,
-            _interval(0.01, 0.02): EffectEvidence.STATISTICAL_IMPROVEMENT,
+            _interval(0.01, 0.02): EffectEvidence.STATISTICAL_IMPROVEMENT_ONLY,
             _interval(-0.02, 0.02): EffectEvidence.PRACTICALLY_EQUIVALENT,
             _interval(-0.02, 0.04): EffectEvidence.INCONCLUSIVE,
-            _interval(-0.02, -0.01): EffectEvidence.STATISTICAL_REGRESSION,
+            _interval(-0.02, -0.01): EffectEvidence.STATISTICAL_REGRESSION_ONLY,
             _interval(-0.06, -0.04): EffectEvidence.PRACTICAL_REGRESSION,
         }
 
