@@ -197,9 +197,29 @@ def classify_effect(
 
     Statistical evidence means the interval excludes zero. Practical evidence is
     deliberately harder: the entire interval must clear the product's minimum
-    worthwhile effect in the same direction. An interval wholly inside the
-    practical-equivalence band supports equivalence; merely crossing zero remains
-    inconclusive. The threshold must be policy input chosen before this interval.
+    worthwhile effect in the same direction. The threshold must be policy input
+    chosen before this interval.
+
+    The states are checked in priority order, and the order is part of the lesson:
+
+    1. the whole interval clears +threshold, or falls below -threshold
+    2. the whole interval clears zero in either direction
+    3. the whole interval fits inside the equivalence band and contains zero
+    4. anything else is inconclusive
+
+    Rule 3 is therefore narrower than "wholly inside the band." An interval such as
+    [+0.01, +0.02] against a threshold of 0.03 fits inside the band *and* excludes
+    zero, so it supports both a directional claim and an equivalence claim; this
+    function reports ``STATISTICAL_IMPROVEMENT_ONLY`` because direction is the more
+    specific finding and the release decision is identical either way. A formal
+    two-one-sided-tests analysis would report both facts side by side; a single
+    label cannot, so read ``PRACTICALLY_EQUIVALENT`` as "small and not separable
+    from zero," never as "proven identical."
+
+    Boundary handling is asymmetric on purpose. The practical and statistical
+    comparisons are strict, so an interval that merely touches +threshold or zero
+    does not clear it, while the equivalence band is inclusive. Both choices fail
+    toward the more cautious answer.
     """
 
     threshold = _nonnegative("minimum_practical_effect", minimum_practical_effect)
