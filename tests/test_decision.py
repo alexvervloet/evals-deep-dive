@@ -4,6 +4,7 @@ import math
 import unittest
 
 from evals.decision import (
+    MINIMUM_NORMAL_LOOK,
     EffectEvidence,
     PairedBootstrapInterval,
     SequentialStatus,
@@ -88,6 +89,42 @@ class EvidenceTests(unittest.TestCase):
                     ),
                     expected,
                 )
+
+    def test_every_state_is_named_after_its_value(self) -> None:
+        for state in EffectEvidence:
+            with self.subTest(state=state):
+                self.assertEqual(state.name.lower(), state.value)
+        for state in SequentialStatus:
+            with self.subTest(state=state):
+                self.assertEqual(state.name.lower(), state.value)
+
+    def test_equivalence_is_reserved_for_intervals_containing_zero(self) -> None:
+        threshold = 0.03
+        inside_band_excluding_zero = _interval(0.01, 0.02)
+        inside_band_containing_zero = _interval(-0.01, 0.02)
+
+        self.assertIs(
+            classify_effect(
+                inside_band_excluding_zero, minimum_practical_effect=threshold
+            ),
+            EffectEvidence.STATISTICAL_IMPROVEMENT_ONLY,
+        )
+        self.assertIs(
+            classify_effect(
+                inside_band_containing_zero, minimum_practical_effect=threshold
+            ),
+            EffectEvidence.PRACTICALLY_EQUIVALENT,
+        )
+
+    def test_touching_a_boundary_does_not_clear_it(self) -> None:
+        self.assertIs(
+            classify_effect(_interval(0.03, 0.05), minimum_practical_effect=0.03),
+            EffectEvidence.STATISTICAL_IMPROVEMENT_ONLY,
+        )
+        self.assertIs(
+            classify_effect(_interval(0.0, 0.02), minimum_practical_effect=0.03),
+            EffectEvidence.PRACTICALLY_EQUIVALENT,
+        )
 
     def test_invalid_interval_cannot_be_classified(self) -> None:
         with self.assertRaisesRegex(ValueError, "must not exceed"):
@@ -209,10 +246,31 @@ class SequentialTests(unittest.TestCase):
 
         self.assertIs(looks[0].status, SequentialStatus.STOP_FOR_HARM)
 
+    def test_a_first_look_below_the_normal_floor_is_rejected(self) -> None:
+        pairs = MINIMUM_NORMAL_LOOK * 4
+        control = [0.5] * pairs
+        candidate = [0.55] * pairs
+
+        with self.assertRaisesRegex(ValueError, "normal approximation"):
+            sequential_paired_test(
+                control,
+                candidate,
+                look_sizes=(MINIMUM_NORMAL_LOOK - 1, pairs),
+                minimum_practical_effect=0.03,
+            )
+
+        accepted = sequential_paired_test(
+            control,
+            candidate,
+            look_sizes=(MINIMUM_NORMAL_LOOK, pairs),
+            minimum_practical_effect=0.03,
+        )
+        self.assertEqual(accepted[0].pairs, MINIMUM_NORMAL_LOOK)
+
     def test_look_schedule_must_be_predeclared_and_available(self) -> None:
-        control = [0.5] * 10
-        candidate = [0.5] * 10
-        invalid_schedules = ((), (4, 4), (6, 4), (4, 11), (1, 4))
+        control = [0.5] * 100
+        candidate = [0.5] * 100
+        invalid_schedules = ((), (40, 40), (60, 40), (40, 101), (1, 40))
 
         for schedule in invalid_schedules:
             with self.subTest(schedule=schedule), self.assertRaises(ValueError):
