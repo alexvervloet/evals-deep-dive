@@ -64,3 +64,15 @@
 - **Next time:** When a docstring enumerates cases, derive the test table from that
   enumeration before looking at the branches. A test written from the source can
   only ever confirm the source.
+
+## Never narrate a conclusion the script already computed
+
+- **Expected:** A seeded, deterministic lesson could safely print its verdict as
+  fixed prose, and the CI check comparing two runs byte for byte would protect it.
+- **Actual:** The example printed "decision: HOLD" and a literal "+3.00 pp" beside a
+  separately computed evidence state. Both runs agree with each other no matter what
+  the statistics say, so that check could never detect the narration drifting from
+  the result after a change to the seed, the simulated lift, or the threshold.
+- **Next time:** Derive every user-visible verdict from the computed value, and treat
+  determinism checks as a reproducibility guarantee only, never as agreement between
+  a result and the sentence describing it.
