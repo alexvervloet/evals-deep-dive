@@ -40,3 +40,15 @@
 - **Next time:** Select checks per artifact (`py_compile` for Python, a Markdown
   link/style check for prose) instead of interpolating heterogeneous paths into one
   command template.
+
+## Encode an approximation's validity range as a guard, not a sentence
+
+- **Expected:** Documenting the sequential intervals as a "large-sample
+  approximation" would be enough to keep readers out of the range where it fails.
+- **Actual:** The guard only required two pairs per look. A simulation showed a
+  nominal 95% interval covering 70% at two pairs, 88% at five, and 94% at twenty,
+  so a module whose whole subject is spending a declared error budget could spend
+  six times it while still printing the declared number.
+- **Next time:** When a lesson's credibility rests on a stated error rate, measure
+  the approximation's coverage and reject the inputs where it breaks. Prose next to
+  a permissive guard is a disclaimer, not a control.
