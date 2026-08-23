@@ -19,6 +19,7 @@ Import what you need, e.g.:
 
 from .dataset import Example, load_jsonl
 from .decision import (
+    MINIMUM_NORMAL_LOOK,
     EffectEvidence,
     PairedBootstrapInterval,
     SequentialLook,
@@ -57,6 +58,7 @@ from .scorers import (
 __all__ = [
     "Example",
     "load_jsonl",
+    "MINIMUM_NORMAL_LOOK",
     "EffectEvidence",
     "PairedBootstrapInterval",
     "SequentialLook",
