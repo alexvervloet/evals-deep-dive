@@ -36,7 +36,7 @@ MINIMUM_NORMAL_LOOK = 30
 
 
 class EffectEvidence(str, Enum):
-    """State what an interval supports, without turning uncertainty into no effect."""
+    """State what an interval supports, never reporting uncertainty as absence."""
 
     PRACTICAL_IMPROVEMENT = "practical_improvement"
     STATISTICAL_IMPROVEMENT_ONLY = "statistical_improvement_only"
