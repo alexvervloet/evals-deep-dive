@@ -52,3 +52,15 @@
 - **Next time:** When a lesson's credibility rests on a stated error rate, measure
   the approximation's coverage and reject the inputs where it breaks. Prose next to
   a permissive guard is a disclaimer, not a control.
+
+## Build the test table from the docstring, not from the implementation
+
+- **Expected:** A test that asserts one interval per evidence state would prove the
+  classifier and its documentation agreed.
+- **Actual:** The docstring promised that any interval inside the equivalence band
+  supports equivalence, while the code returned the directional state first. The
+  test case `[+0.01, +0.02]` was written by reading the code, so it asserted the
+  behavior the docstring denied and froze the contradiction in place.
+- **Next time:** When a docstring enumerates cases, derive the test table from that
+  enumeration before looking at the branches. A test written from the source can
+  only ever confirm the source.
