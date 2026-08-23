@@ -295,7 +295,10 @@ See [evals/decision.py](evals/decision.py). The teaching implementation uses a
 percentile bootstrap, normal planning intervals, and Bonferroni spending. Those
 choices are readable and conservative, not universal: clustered users, adaptive
 traffic, rare outcomes, or regulated decisions need a design validated for their
-sampling process.
+sampling process. The sequential looks refuse any schedule starting below 30 pairs,
+because at two pairs a nominal 95% interval actually covers about 70% of the time,
+and a module about spending an error budget honestly should not hand you a
+six-times overspend with the declared number still printed on it.
 
 ---
 
