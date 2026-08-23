@@ -76,3 +76,15 @@
 - **Next time:** Derive every user-visible verdict from the computed value, and treat
   determinism checks as a reproducibility guarantee only, never as agreement between
   a result and the sentence describing it.
+
+## Re-parse Python after a bulk punctuation rewrite
+
+- **Expected:** Substituting straight quotes for typographic ones across the changed
+  files was a cosmetic edit with no way to break code.
+- **Actual:** One class docstring ended on a quoted phrase, so the substitution
+  produced four consecutive quote characters and an unterminated string literal. The
+  `grep` that confirmed the punctuation was gone reported success on a file that no
+  longer parsed; only an explicit `ast.parse` surfaced it.
+- **Next time:** Follow any repository-wide punctuation or quoting rewrite with a
+  parse of every touched source file. Confirming the old characters are absent says
+  nothing about whether the result is still valid Python.
