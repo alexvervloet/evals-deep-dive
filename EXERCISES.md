@@ -131,8 +131,8 @@ The rubric is the most important sentence in the eval.
 
 <details><summary>▸ Answer</summary>
 
-Position bias is a judge favouring whichever answer is shown first. The fix: judge
-each pair in *both* orders and only count a win if the same answer wins both ways
+Position bias is a judge favouring whichever answer is shown first. Fix it by judging
+each pair in *both* orders and only counting a win if the same answer wins both ways
 (otherwise call it a tie). This both detects and neutralizes the bias.
 </details>
 
