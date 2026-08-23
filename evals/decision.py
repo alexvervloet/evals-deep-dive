@@ -26,6 +26,14 @@ from dataclasses import dataclass
 from enum import Enum
 from statistics import NormalDist, mean, stdev
 
+# The sequential intervals below use a normal critical value, which is only
+# honest once a look is large enough for the central limit theorem to have done
+# its work. Measured two-sided coverage of a nominal 95% interval over 20,000
+# simulated normal samples: 70% at 2 pairs, 88% at 5, 94% at 20, 95% at 100. A
+# design that advertises a spent error budget must not quietly spend six times
+# it, so looks below this floor are rejected rather than approximated.
+MINIMUM_NORMAL_LOOK = 30
+
 
 class EffectEvidence(str, Enum):
     """State what an interval supports without turning uncertainty into “no effect.”"""
@@ -381,8 +389,11 @@ def sequential_paired_test(
 
     This does not authorize arbitrary peeking: changing the schedule after seeing
     outcomes invalidates the declared error budget. Normal intervals are a readable
-    large-sample approximation; production sequential testing should use a design
-    such as a validated alpha-spending boundary for the actual outcome model.
+    large-sample approximation, so every look must reach ``MINIMUM_NORMAL_LOOK``
+    pairs; below that the interval is far narrower than its label claims. Even
+    above the floor the approximation runs slightly narrow, so production
+    sequential testing should use a design such as a validated alpha-spending
+    boundary for the actual outcome model.
     """
 
     differences = paired_differences(control, candidate)
@@ -397,8 +408,11 @@ def sequential_paired_test(
         _positive_integer("look size", look)
     if tuple(sorted(set(looks))) != looks:
         raise ValueError("look_sizes must be unique and strictly increasing")
-    if looks[0] < 2:
-        raise ValueError("the first look must contain at least two pairs")
+    if looks[0] < MINIMUM_NORMAL_LOOK:
+        raise ValueError(
+            "the first look must contain at least "
+            f"{MINIMUM_NORMAL_LOOK} pairs for the normal approximation"
+        )
     if looks[-1] > len(differences):
         raise ValueError("a look cannot exceed the available paired observations")
 

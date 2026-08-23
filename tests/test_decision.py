@@ -158,7 +158,7 @@ class SequentialTests(unittest.TestCase):
         looks = sequential_paired_test(
             control,
             candidate,
-            look_sizes=(20, 40, 80),
+            look_sizes=(30, 50, 80),
             minimum_practical_effect=0.03,
             comparisons=2,
         )
