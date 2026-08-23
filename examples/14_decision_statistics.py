@@ -5,7 +5,7 @@ A candidate and control usually answer the same eval cases. That pairing is
 valuable evidence: a hard case is hard for both systems, so compare each case to
 itself instead of pretending the two score lists came from unrelated samples.
 
-This lesson also separates questions that a single “significant?” flag collapses:
+This lesson also separates questions that a single "significant?" flag collapses:
 
 1. Is the observed lift distinguishable from zero?
 2. Is the entire plausible lift large enough to matter to the product?
@@ -208,5 +208,5 @@ else:
 print(
     "\nTakeaway: pair the same cases, plan sensitivity before collecting the final "
     "sample, spend one error budget across every metric and look, and require the "
-    "whole interval—not just a point estimate—to clear the effect worth shipping."
+    "whole interval, not just a point estimate, to clear the effect worth shipping."
 )

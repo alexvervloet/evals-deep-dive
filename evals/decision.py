@@ -36,7 +36,7 @@ MINIMUM_NORMAL_LOOK = 30
 
 
 class EffectEvidence(str, Enum):
-    """State what an interval supports without turning uncertainty into “no effect.”"""
+    """State what an interval supports, without turning uncertainty into no effect."""
 
     PRACTICAL_IMPROVEMENT = "practical_improvement"
     STATISTICAL_IMPROVEMENT_ONLY = "statistical_improvement_only"
@@ -385,7 +385,7 @@ def sequential_paired_test(
     and looks with Bonferroni, constructs a two-sided normal interval for the mean
     paired difference, and stops only when that interval clears the practical
     benefit or harm boundary. Otherwise the final state is explicitly
-    ``complete_inconclusive``—absence of evidence is never reported as no effect.
+    ``complete_inconclusive``: absence of evidence is never reported as no effect.
 
     This does not authorize arbitrary peeking: changing the schedule after seeing
     outcomes invalidates the declared error budget. Normal intervals are a readable
