@@ -81,17 +81,62 @@ def percentage_points(value: float) -> str:
     return f"{value * 100:+.2f} pp"
 
 
+def decision_for(evidence: "evals.EffectEvidence", threshold: float) -> str:
+    """Map an evidence state onto the release decision the policy already fixed.
+
+    The verdict is derived, never narrated. If the seed, the simulated lift, or
+    the threshold changes, this line changes with them instead of quietly
+    contradicting the state printed directly above it.
+    """
+
+    boundary = percentage_points(threshold)
+    states = evals.EffectEvidence
+    if evidence is states.PRACTICAL_IMPROVEMENT:
+        return f"SHIP. The whole interval clears the predeclared {boundary} boundary."
+    if evidence is states.PRACTICAL_REGRESSION:
+        return (
+            "ROLL BACK. The whole interval falls below the predeclared "
+            f"{percentage_points(-threshold)} harm boundary."
+        )
+    if evidence in {
+        states.STATISTICAL_IMPROVEMENT_ONLY,
+        states.STATISTICAL_REGRESSION_ONLY,
+    }:
+        return (
+            "HOLD. The interval clears zero, but not the predeclared "
+            f"{boundary} practical boundary."
+        )
+    if evidence is states.PRACTICALLY_EQUIVALENT:
+        return (
+            "HOLD. The whole interval sits inside the practical-equivalence band, "
+            "so any real effect is too small to be worth shipping."
+        )
+    return (
+        "HOLD. The interval is too wide to separate a shippable gain from a "
+        "regression, which is a sample-size problem, not a verdict."
+    )
+
+
 print("Predeclared decision policy")
 print(f"  minimum practical lift: {percentage_points(MINIMUM_PRACTICAL_EFFECT)}")
 print(f"  family alpha:           {FAMILY_ALPHA:.3f}")
 print(f"  target power:           {TARGET_POWER:.0%}")
-print(f"  metrics × looks:        {PLANNED_METRICS} × {len(PLANNED_LOOKS)}\n")
+print(f"  metrics:                {PLANNED_METRICS}")
+print(
+    f"  looks (sequential run): {len(PLANNED_LOOKS)} at "
+    f"{', '.join(str(look) for look in PLANNED_LOOKS)} pairs\n"
+)
 
 # A tiny but consistent improvement: enough pairs can make it statistically clear
 # even when it remains too small to justify release cost and risk.
 control, tiny_candidate = simulated_eval_scores(
     1_200, capability_lift=0.02, seed=14
 )
+# This first candidate gets one fixed-horizon analysis, so its family is the four
+# predeclared metrics and nothing else: alpha / 4. Section 4 runs a different
+# candidate as a sequential campaign that also buys four looks, so its family is
+# four metrics times four looks and each decision gets alpha / 16. Same budget,
+# different number of chances to spend it.
 metric_alpha = evals.bonferroni_alpha(FAMILY_ALPHA, PLANNED_METRICS)
 paired = evals.paired_bootstrap(
     control,
@@ -116,11 +161,12 @@ print(
     f"[{percentage_points(paired.lower)}, {percentage_points(paired.upper)}] "
     f"({paired.confidence:.2%}, adjusted across {PLANNED_METRICS} metrics)"
 )
-print(f"  evidence state: {evidence.value}")
 print(
-    "  decision: HOLD. The interval clears zero, but not the predeclared "
-    "+3.00 pp practical boundary.\n"
+    f"  pairing wins even at the stricter {paired.confidence:.2%} level: it removes the"
 )
+print("  shared case difficulty that still inflates the unpaired margin above.")
+print(f"  evidence state: {evidence.value}")
+print(f"  decision: {decision_for(evidence, MINIMUM_PRACTICAL_EFFECT)}\n")
 
 # Planning consumes pilot variance, not the final candidate estimate. Using the
 # full result to choose sample size would turn a prospective guarantee into a
