@@ -85,7 +85,7 @@ def decision_for(evidence: "evals.EffectEvidence", threshold: float) -> str:
     """Map an evidence state onto the release decision the policy already fixed.
 
     The verdict is derived, never narrated. If the seed, the simulated lift, or
-    the threshold changes, this line changes with them instead of quietly
+    the threshold changes, this line changes with them instead of
     contradicting the state printed directly above it.
     """
 
