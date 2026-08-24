@@ -30,7 +30,7 @@ from statistics import NormalDist, mean, stdev
 # honest once a look is large enough for the central limit theorem to have done
 # its work. Measured two-sided coverage of a nominal 95% interval over 20,000
 # simulated normal samples: 70% at 2 pairs, 88% at 5, 94% at 20, 95% at 100. A
-# design that advertises a spent error budget must not quietly spend six times
+# design that advertises a spent error budget must not spend six times
 # it, so looks below this floor are rejected rather than approximated.
 MINIMUM_NORMAL_LOOK = 30
 
