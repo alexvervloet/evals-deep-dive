@@ -7,9 +7,9 @@ datasets/ and looks at what's in them, and what *kind* of eval each enables.
 
 The distinction to internalize:
 
-  - reference-based (has `expected`): you can score against a known answer 
+  - reference-based (has `expected`): you can score against a known answer:
     exact match, F1, numeric tolerance. Precise, but you had to label it.
-  - reference-free (no `expected`): you judge the output on its own merits 
+  - reference-free (no `expected`): you judge the output on its own merits:
     valid JSON? an LLM judge's rating? No labels needed, fuzzier signal.
 
 Run it:
