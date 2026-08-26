@@ -10,7 +10,7 @@ leg of the RAG eval triad.
 
 Faithfulness needs no gold answer, only the context the model was handed. So it's
 a *reference-free* judge: read the CONTEXT and the ANSWER, and score whether every
-claim in the answer is supported by the context (true-but-unsupported still fails 
+claim in the answer is supported by the context (true-but-unsupported still fails:
 the test is grounding, not truth).
 
 This example runs the SAME questions over the SAME contexts two ways:
