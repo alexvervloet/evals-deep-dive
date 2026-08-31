@@ -64,7 +64,7 @@ def ensure_ready() -> None:
     if missing:
         sys.exit(
             f"PROVIDER={p} needs {', '.join(missing)} in the environment. "
-            f"Provide them via secrun (see SECRETS.md), or run `secrun python check_setup.py`."
+            f"Provide them via secrun (see ../docs/SECRETS.md), or run `secrun python check_setup.py`."
         )
 
 
