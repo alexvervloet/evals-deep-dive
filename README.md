@@ -391,11 +391,13 @@ Everything above runs on fixtures, offline, for free, which is what makes it a l
 against a deployed application and a real bill, and the parts that change are the
 interesting ones. Its judge is calibrated against human labels before it grades
 anything, and refuses below a floor declared in the repository beforehand. Its margin
-is a product decision written down before the comparison ran. And its first real
-finding is one no lab produces: at the spread two actual models show, 120 paired cases
-resolve a difference of about 11.5%, while the margin it declared is 5%. The suite
-cannot answer its own question, which is a thing worth knowing before you trust one
-that never told you.
+is a product decision written down before the comparison ran. And its first
+finding is one no lab produces. Comparing two real models on 120 paired cases returned
+`inconclusive`: the cheaper model is measurably worse, and 120 cases cannot settle
+whether it is worse by more than the 5% declared acceptable. The interval spans the
+margin, the report says so, and roughly 81 more cases would settle it. A suite that
+returns "inconclusive" rather than laundering a 5-point measurement into a decision is
+the thing this dive is teaching you to build.
 
 ---
 
