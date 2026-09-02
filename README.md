@@ -386,6 +386,17 @@ versioning, and eval gates) get built from scratch and wired into one running ap
 the series and where this repo's eval gate sits on the request path. It runs offline on
 a mock provider, so you can see the whole ops machinery with no key and no cost.
 
+Everything above runs on fixtures, offline, for free, which is what makes it a lab.
+[model-swap](https://github.com/alexvervloet/model-swap) runs the same statistics
+against a deployed application and a real bill, and the parts that change are the
+interesting ones. Its judge is calibrated against human labels before it grades
+anything, and refuses below a floor declared in the repository beforehand. Its margin
+is a product decision written down before the comparison ran. And its first real
+finding is one no lab produces: at the spread two actual models show, 120 paired cases
+resolve a difference of about 11.5%, while the margin it declared is 5%. The suite
+cannot answer its own question, which is a thing worth knowing before you trust one
+that never told you.
+
 ---
 
 ## File map
