@@ -88,3 +88,17 @@
 - **Next time:** Follow any repository-wide punctuation or quoting rewrite with a
   parse of every touched source file. Confirming the old characters are absent says
   nothing about whether the result is still valid Python.
+
+## Check which direction a metric fails in
+
+- **Expected:** `zip(predicted, expected)` was an unremarkable way to pair a metric's
+  inputs, since every example in the repository builds both lists from the same
+  result set and they always match.
+- **Actual:** `zip` truncates to the shorter list, so a caller that lost predictions
+  scored the surviving ones and divided by that smaller count. Missing predictions
+  did not lower the score, they left it. Four correct predictions against eight
+  expected labels reported 100%, and the shape repeated in `precision_recall_f1`.
+- **Next time:** For any scorer or metric, ask which way it fails when its inputs are
+  degraded. A tolerant one usually fails toward a higher number, and a higher number
+  is the result nobody investigates. Reject the malformed input instead of averaging
+  whatever survived, and say in the error what the caller should do about it.
