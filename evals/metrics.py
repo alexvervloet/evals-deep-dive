@@ -28,10 +28,29 @@ def pass_rate(scores) -> float:
     return sum(bools) / len(bools) if bools else 0.0
 
 
+def _paired(predicted: list, expected: list, caller: str) -> None:
+    """Refuse mismatched lengths instead of quietly scoring the overlap.
+
+    `zip` truncates to the shorter list, which is the wrong default for a metric:
+    a run that dropped predictions (an API error, a filtered row, a parse failure)
+    would score *higher*, because the cases it lost stop counting. Four correct
+    predictions against eight expected labels reads as 100%.
+
+    A missing prediction is a result, not a gap. Decide what it means, and it is
+    almost always a wrong answer, then pass a full-length list.
+    """
+    if len(predicted) != len(expected):
+        raise ValueError(
+            f"{caller}() got {len(predicted)} predictions for {len(expected)} expected "
+            f"labels. Missing predictions are wrong answers, not absent cases: fill "
+            f"them in (with None, or a sentinel that matches nothing) so they count."
+        )
+
+
 def accuracy(predicted: list, expected: list) -> float:
     """Fraction of predictions exactly equal to the expected label."""
-    pairs = list(zip(predicted, expected))
-    return sum(p == e for p, e in pairs) / len(pairs) if pairs else 0.0
+    _paired(predicted, expected, "accuracy")
+    return sum(p == e for p, e in zip(predicted, expected)) / len(expected) if expected else 0.0
 
 
 def precision_recall_f1(predicted: list, expected: list, positive_label) -> dict:
@@ -41,6 +60,7 @@ def precision_recall_f1(predicted: list, expected: list, positive_label) -> dict
     alarms). recall = of the *actually* positive ones, how many did we catch?
     (penalizes misses). F1 is their harmonic mean: one number balancing both.
     """
+    _paired(predicted, expected, "precision_recall_f1")
     tp = sum(p == positive_label and e == positive_label for p, e in zip(predicted, expected))
     fp = sum(p == positive_label and e != positive_label for p, e in zip(predicted, expected))
     fn = sum(p != positive_label and e == positive_label for p, e in zip(predicted, expected))
