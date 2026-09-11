@@ -84,7 +84,7 @@ python examples/01_anatomy.py        # offline
 
 The task is a function from input to output, and nothing more. Here it's a Python rule.
 In Section 6 it's an LLM call. It could be an entire RAG pipeline. The eval machinery
-does not change. See [evals/runner.py](evals/runner.py), where `run_eval` is about ten
+doesn't change. See [evals/runner.py](evals/runner.py), where `run_eval` is about ten
 lines, because an eval really is that simple.
 
 ---
@@ -145,7 +145,7 @@ python examples/04_metrics.py        # offline math
 - **`compare()`.** A first fixed-horizon, independent-sample screen for whether an
   interval clears zero.
 
-See [evals/metrics.py](evals/metrics.py). It teaches the shape of uncertainty and it is
+See [evals/metrics.py](evals/metrics.py). It teaches the shape of uncertainty and it's
 not a release decision. It discards pairing and takes no account of a practical
 threshold, multiple metrics, or repeated looks. Example 14 adds those.
 
@@ -223,7 +223,7 @@ secrun python examples/09_nondeterminism.py
 
 This runs the same eval several times at temperature 0.7 to watch the score wobble,
 reports a mean with a confidence interval instead of one number, and uses `compare()` as
-a fixed-horizon screen over independent run-level scores. It is the costliest example,
+a fixed-horizon screen over independent run-level scores. It's the costliest example,
 using a small slice and a few runs, so turn them down to spend less. Example 14 handles
 the paired per-case release decision.
 
@@ -232,7 +232,7 @@ the paired per-case release decision.
 ## Going further: five more kinds of eval
 
 The core loop scores a single output string. These extend it to the cases you hit in
-practice. Four of them run offline and free, because they are about method. Faithfulness
+practice. Four of them run offline and free, because they're about method. Faithfulness
 is a model-graded judge, so it makes small calls.
 
 ### Evaluating an agent's trajectory
@@ -294,7 +294,7 @@ and conservative rather than universal. Clustered users, adaptive traffic, rare 
 and regulated decisions all need a design validated for their own sampling process. The
 sequential looks refuse any schedule starting below 30 pairs, because at two pairs a
 nominal 95% interval actually covers about 70% of the time, and a module about spending
-an error budget honestly should not hand you a six-times overspend with the declared
+an error budget honestly shouldn't hand you a six-times overspend with the declared
 number still printed on it.
 
 ---
@@ -324,16 +324,16 @@ secrun python hands_on/eval_run.py sentiment --fail-under 0.7
 Three built-in suites exercise the whole repo. `sentiment` pairs a classifier with a
 code scorer, `qa` pairs answers with an LLM judge, and `extraction` pairs JSON with key
 checks. Read [hands_on/eval_run.py](hands_on/eval_run.py). The diff uses `compare()` as a
-fixed-horizon screen, so it does not cry regression over every numeric change.
+fixed-horizon screen, so it doesn't cry regression over every numeric change.
 **Suggested exercise:** wire `--fail-under` into a pre-commit hook, then watch a
 quality-tanking prompt change fail the build.
 
-> **The diff's `± margin` will look huge, often ±40% or more. That is expected rather
-> than a bug.** It is the normal-approximation interval on the difference between two
+> **The diff's `± margin` will look huge, often ±40% or more. That's expected rather
+> than a bug.** It's the normal-approximation interval on the difference between two
 > runs' pass rates, and two things blow it up here. The datasets are tiny, around ten
 > examples, so the margin scales as roughly 1/√n and one example flipping is a 10-point
-> swing. And each score is binary 0 or 1, which is maximum variance. That is the lesson.
-> With a handful of examples this screen cannot separate a small change from noise.
+> swing. And each score is binary 0 or 1, which is maximum variance. That's the lesson.
+> With a handful of examples this screen can't separate a small change from noise.
 > Shrink the margin with more data or more `--runs`, not by trusting a smaller sample.
 > For a real release comparison over the same cases, keep per-case scores and use the
 > predeclared policy from Example 14.
@@ -393,8 +393,8 @@ interesting ones. Its judge is calibrated against human labels before it grades
 anything, and refuses below a floor declared in the repository beforehand. Its margin
 is a product decision written down before the comparison ran. And its first
 finding is one no lab produces. Comparing two real models on 120 paired cases returned
-`inconclusive`: the cheaper model is measurably worse, and 120 cases cannot settle
-whether it is worse by more than the 5% declared acceptable. The interval spans the
+`inconclusive`: the cheaper model is measurably worse, and 120 cases can't settle
+whether it's worse by more than the 5% declared acceptable. The interval spans the
 margin, the report says so, and roughly 81 more cases would settle it. A suite that
 returns "inconclusive" rather than laundering a 5-point measurement into a decision is
 the thing this dive is teaching you to build.
@@ -496,4 +496,4 @@ And the whole series lands in one codebase in the
 [capstone](https://github.com/alexvervloet/deep-dive-capstone): a codebase Q&A tool
 built step by step, one tag per dive.
 
-**You are here: #5, Evals.**
+**You're here: #5, Evals.**
