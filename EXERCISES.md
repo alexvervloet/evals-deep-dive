@@ -1,6 +1,6 @@
 # Exercises: make the learning stick
 
-Reading code teaches you less than *predicting* what it will do and then checking.
+Reading code teaches you less than *predicting* what it'll do and then checking.
 This file turns each section of the [README](README.md) into a few quick
 active-recall prompts.
 
@@ -72,7 +72,7 @@ result remain insufficient to authorize a release?
 <details><summary>▸ Answer</summary>
 
 Once the gap shrinks into the margin, `likely_real` flips to False: this screen
-cannot distinguish it from sampling variation. If it stays True, the comparison
+can't distinguish it from sampling variation. If it stays True, the comparison
 still discarded per-case pairing and never accounted for a practical threshold,
 multiple metrics, or repeated looks. Example 14 supplies that decision contract.
 </details>
@@ -126,7 +126,7 @@ The rubric is the most important sentence in the eval.
 
 ## Section 8: Judge bias
 
-**Recall.** What is position bias, and what's the one-line fix used in
+**Recall.** What's position bias, and what's the one-line fix used in
 `examples/08_judge_bias.py`?
 
 <details><summary>▸ Answer</summary>
@@ -212,7 +212,7 @@ evidence state and decision should appear?
 <details><summary>▸ Answer</summary>
 
 `statistical_improvement_only` and **HOLD**. Enough data can measure a tiny effect
-precisely; precision does not make the effect worth migration cost or release risk.
+precisely; precision doesn't make the effect worth migration cost or release risk.
 </details>
 
 **Calculate.** With variance and error controls held fixed, what happens to MDE
@@ -233,20 +233,20 @@ each of sixteen metric-look decisions instead?
 
 `1 - 0.95**4 ≈ 18.5%`. Dividing the family alpha `.05` by `4 metrics × 4 looks`
 gives `.003125` per decision; Bonferroni's union bound keeps the whole declared
-family at or below five percent even when metrics and looks are dependent. It is
+family at or below five percent even when metrics and looks are dependent. It's
 conservative, which is the price of the simple guarantee.
 </details>
 
 **Break, diagnose, repair.** Shuffle only the candidate score list before calling
-`paired_bootstrap`. The function cannot detect that both lists still have equal
-length. What invariant did the caller violate, and what is the production repair?
+`paired_bootstrap`. The function can't detect that both lists still have equal
+length. What invariant did the caller violate, and what's the production repair?
 
 <details><summary>▸ Answer</summary>
 
 Position no longer names the same case in both arms, so the computed differences
 are meaningless even though every number is valid. Join control and candidate by
 a trusted unique case (or user/session) ID, reject missing and duplicate matches,
-then pass the aligned scores. Length validation prevents truncation; it cannot
+then pass the aligned scores. Length validation prevents truncation; it can't
 prove identity alignment the caller discarded.
 </details>
 
