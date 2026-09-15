@@ -103,7 +103,9 @@ def generate(system: str, user: str, temperature: float = 0.0, max_tokens: int =
     if p == "claude":
         resp = _anthropic_client().messages.create(
             model=_CLAUDE_CHAT,
-            temperature=temperature,
+            # extra_body, not a keyword: anthropic 1.0 removed the sampling knobs
+            # from the Messages signature. Haiku 4.5 still takes it server-side.
+            extra_body={"temperature": temperature},
             max_tokens=max_tokens,
             system=system,
             messages=[{"role": "user", "content": user}],
