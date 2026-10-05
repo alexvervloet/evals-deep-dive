@@ -24,7 +24,7 @@ import os
 import sys
 from functools import lru_cache
 
-_OPENAI_CHAT = "gpt-5.4-nano"
+_OPENAI_CHAT = "gpt-6-luna"
 _CLAUDE_CHAT = "claude-haiku-4-5"
 
 _KEYS = {
@@ -92,6 +92,9 @@ def generate(system: str, user: str, temperature: float = 0.0, max_tokens: int =
     if p == "openai":
         resp = _openai_client().chat.completions.create(
             model=_OPENAI_CHAT,
+            # gpt-6-luna reasons by default, and while it does it rejects
+            # temperature. "none" turns that off so the knob above still works.
+            reasoning_effort="none",
             temperature=temperature,
             max_completion_tokens=max_tokens,
             messages=[
