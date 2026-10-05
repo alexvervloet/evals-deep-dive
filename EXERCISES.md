@@ -133,7 +133,9 @@ The rubric is the most important sentence in the eval.
 
 Position bias is a judge favouring whichever answer is shown first. Fix it by judging
 each pair in *both* orders and only counting a win if the same answer wins both ways
-(otherwise call it a tie). This both detects and neutralizes the bias.
+(otherwise call it a tie). This both detects and neutralizes the bias. What it can't
+catch is a preference that holds in both orders, like favouring the longer answer; the
+example's second check shows one.
 </details>
 
 ---
