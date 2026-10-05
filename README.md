@@ -58,7 +58,7 @@ sibling repos with `PROVIDER` in `.env`.
 
 | `PROVIDER` | Chat model | Key needed |
 |------------|-----------|------------|
-| `openai` (default) | OpenAI `gpt-5.4-nano` | `OPENAI_API_KEY` |
+| `openai` (default) | OpenAI `gpt-6-luna` | `OPENAI_API_KEY` |
 | `claude` | Claude `claude-haiku-4-5` | `ANTHROPIC_API_KEY` |
 
 The only file that knows which provider you picked is
