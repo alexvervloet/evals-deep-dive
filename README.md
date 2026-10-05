@@ -198,18 +198,27 @@ flips. The rubric is the most important sentence in the whole eval.
 
 ---
 
-## 9. Your judge is biased
+## 9. Is your judge biased?
 
-A judge is a model, so it has biases. The most notorious is position bias, a tendency to
-prefer whichever answer came first.
+A judge is a model, so it can have biases. The most notorious is position bias, a
+tendency to prefer whichever answer came first.
 
 ```bash
 secrun python examples/08_judge_bias.py
 ```
 
 The test doubles as the fix. Judge each pair in both orders and only count a win if the
-same answer wins both ways. The example measures how often the verdict flips on order
-alone, which is why you have to sanity-check a judge before trusting its numbers.
+same answer wins both ways. Use pairs that are about equally good, since that's where
+order gets to break the tie. How much it matters depends on the judge: on four such
+pairs over five runs, `gpt-5.4-nano` flipped 15 of 20 verdicts and `gpt-4o-mini` 5,
+while `gpt-6-luna` and `claude-haiku-4-5` flipped none and called most pairs ties. So
+seeing zero flips is a real result. It's this judge passing this check.
+
+The example's second check is the one the swap test can't do. Pair a terse correct
+answer with a longer correct one, and most judges pick the longer one in both orders.
+That's consistent, so the swap test passes it. Whether it's length bias or a fair
+reading of "helpful" is a question for your rubric, which is why you sanity-check a
+judge against human labels before trusting its numbers.
 
 ---
 
