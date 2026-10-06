@@ -461,7 +461,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | `AuthenticationError` / 401 | The key is present but wrong; check it matches the `PROVIDER` you set. |
 | Scores change every run | Expected above temperature 0; that's the whole lesson of Section 10. Use `--runs` and confidence intervals; the library's tasks default to temperature 0 for stability. |
 | The judge's verdicts seem off | Judges are biased models (Section 9). Calibrate against a few human labels and judge both orders; don't treat a judge as ground truth. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it directly.
