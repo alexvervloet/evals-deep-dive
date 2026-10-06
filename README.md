@@ -354,8 +354,9 @@ quality-tanking prompt change fail the build.
 You've built a complete small eval framework. The road to production is more of the same
 idea, at more scale and more rigor.
 
-- **Eval frameworks.** promptfoo, OpenAI Evals, Inspect, and for RAG, Ragas or DeepEval,
-  instead of hand-rolling the runner.
+- **Eval frameworks.** promptfoo, Inspect, and for RAG, Ragas or DeepEval, instead of
+  hand-rolling the runner. OpenAI's hosted Evals platform goes read-only on 2026-10-31
+  and shuts down on 2026-11-30, and OpenAI's own migration guide points to promptfoo.
 - **Bigger, better datasets.** More examples, harder cases, stratified by category, plus
   generating or mining them from production traffic.
 - **Human evaluation.** Annotation workflows and inter-annotator agreement, the ground
