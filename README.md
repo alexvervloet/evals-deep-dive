@@ -236,6 +236,31 @@ a fixed-horizon screen over independent run-level scores. It's the costliest exa
 using a small slice and a few runs, so turn them down to spend less. Example 14 handles
 the paired per-case release decision.
 
+### Then the eval becomes a target: climbing without fooling yourself
+
+```bash
+python examples/15_hill_climbing.py               # offline, exact
+secrun python examples/15_hill_climbing.py --live # the same loop on the real model
+```
+
+Once an eval exists, the natural next move is to climb it. Read the failures, edit the
+prompt, keep the edit if the score rises, repeat. Tools automate this now, and it works.
+The trap is which score you climb. If you pick edits by reading failures and keep them
+because those same examples improved, you're fitting those examples, and the number
+can't tell a real fix from a coincidence or from the answers pasted into the prompt.
+
+So [datasets/tickets.jsonl](datasets/tickets.jsonl) carries three frozen splits. The
+optimizer reads train failures, validation decides whether an edit stays, and test is
+scored once at the end. [evals/hillclimb.py](evals/hillclimb.py) runs the same five
+edits under both policies, and two are traps: every train ticket that mentions Monday
+happens to be a bug, and the last edit pastes the remaining train failures in as
+examples. Offline, the train-only loop keeps all five, reports 100%, and scores 75% on
+test, while the validation gate drops both traps. Live on `gpt-6-luna` it's subtler:
+the unedited prompt already scores 96% on train, the train-only loop still keeps the
+Monday rule, and with 20 test tickets the gap between the two policies came out as one
+ticket in one run and zero in another. That's section 10's lesson again, from the other
+side: a small eval can catch a big mistake and can't certify a small improvement.
+
 ---
 
 ## Going further: five more kinds of eval
@@ -424,11 +449,13 @@ evals/                      ← the from-scratch library (read it!)
   judges.py                 ← LLM-as-judge: pointwise + pairwise
   metrics.py                ← accuracy, precision/recall/F1, pass@k, CIs, compare
   decision.py               ← paired bootstrap, power, multiplicity, sequential tests
+  hillclimb.py              ← prompt edits, frozen splits, and two acceptance policies
   runner.py                 ← run_eval + the Report (save / load / diff)
 datasets/                   ← small golden sets (JSONL)
   sentiment.jsonl           ← classification (labels)
   qa.jsonl                  ← short-answer QA
   extraction.jsonl          ← structured extraction (JSON)
+  tickets.jsonl             ← 60 support tickets, frozen train/validation/test splits
 hands_on/
   eval_run.py               ← capstone: suite runner + baseline diff + CI gate
 examples/
@@ -446,6 +473,7 @@ examples/
   12_online_eval.py         ← fixed-horizon A/B screen + guardrails (offline)
   13_faithfulness.py        ← reference-free groundedness judge for RAG (grounded vs loose)
   14_decision_statistics.py ← paired release evidence, power, multiplicity, looks (offline)
+  15_hill_climbing.py       ← climbing an eval on train vs. validation (offline + --live)
 ```
 
 ---
