@@ -154,6 +154,26 @@ screen over independent run scores; paired release evidence comes in Example 14.
 
 ---
 
+**Predict, then run (`15_hill_climbing.py`).** The train-only loop keeps all five
+edits offline. Before running, say which two edits the validation gate drops, and what
+each of them did to the train score.
+
+<details><summary>▸ Answer</summary>
+
+It drops "monday -> bug" and the pasted train failures. Both raise train: the Monday
+rule fixes three train tickets that happen to mention Monday, and pasting the
+failures hands the model their answers, which takes train to 100%. Neither knows
+anything about tickets it hasn't seen. Validation has Monday tickets that aren't bugs,
+so the Monday rule makes validation worse; the pasted examples leave it unchanged,
+which isn't more than the one-ticket margin.
+</details>
+
+**Do.** Run `--live` twice. Write down the test score of each policy's prompt both
+times. Then use example 14's arithmetic to say how many test tickets you'd need before
+a one-ticket difference meant anything.
+
+---
+
 ## Going further
 
 **Recall (trajectory, `10`).** The "lucky" agent scores 100% on the final answer but
