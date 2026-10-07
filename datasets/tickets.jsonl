@@ -1,0 +1,60 @@
+{"input": "I was charged twice for my subscription this month.", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "Please refund the annual plan, I cancelled within a week.", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "Where can I download last month's invoice?", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "My card was declined when I tried to upgrade.", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "Why did the price of my plan go up?", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "The payment page keeps asking for my address again.", "expected": "billing", "metadata": {"split": "train"}}
+{"input": "The app crashes every time I open a shared notebook.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "Sync fails with an error on my laptop.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "The editor freezes when I paste a large table.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "Since the update on Monday, my notes take forever to open.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "Every Monday morning the reminders arrive twice.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "Search returns nothing even for words I can see on the page.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "On Monday the export button stopped doing anything.", "expected": "bug", "metadata": {"split": "train"}}
+{"input": "I forgot my password and the reset email never comes.", "expected": "account", "metadata": {"split": "train"}}
+{"input": "How do I change the email address on my account?", "expected": "account", "metadata": {"split": "train"}}
+{"input": "I can't log in after turning on 2FA.", "expected": "account", "metadata": {"split": "train"}}
+{"input": "Please delete my account and all my data.", "expected": "account", "metadata": {"split": "train"}}
+{"input": "Can two people share one login?", "expected": "account", "metadata": {"split": "train"}}
+{"input": "My username shows someone else's name.", "expected": "account", "metadata": {"split": "train"}}
+{"input": "Would love a dark mode for the mobile app.", "expected": "other", "metadata": {"split": "train"}}
+{"input": "Just wanted to say the new templates are great.", "expected": "other", "metadata": {"split": "train"}}
+{"input": "Is there a way to print a notebook as a booklet?", "expected": "other", "metadata": {"split": "train"}}
+{"input": "Can you add support for Markdown tables?", "expected": "other", "metadata": {"split": "train"}}
+{"input": "Is there an API I can use to import notes?", "expected": "other", "metadata": {"split": "train"}}
+{"input": "I got charged after cancelling, please fix it.", "expected": "billing", "metadata": {"split": "validation"}}
+{"input": "Can I get a refund for the duplicate payment?", "expected": "billing", "metadata": {"split": "validation"}}
+{"input": "Why is the annual plan more expensive in my country?", "expected": "billing", "metadata": {"split": "validation"}}
+{"input": "Please resend the invoice for March.", "expected": "billing", "metadata": {"split": "validation"}}
+{"input": "The app crashes when I rotate my tablet.", "expected": "bug", "metadata": {"split": "validation"}}
+{"input": "Images disappear from notes after syncing.", "expected": "bug", "metadata": {"split": "validation"}}
+{"input": "Error 502 when saving a note.", "expected": "bug", "metadata": {"split": "validation"}}
+{"input": "Typing lags badly in long notes.", "expected": "bug", "metadata": {"split": "validation"}}
+{"input": "Password reset link has expired.", "expected": "account", "metadata": {"split": "validation"}}
+{"input": "How do I turn off 2FA on a lost phone?", "expected": "account", "metadata": {"split": "validation"}}
+{"input": "I want to merge two accounts.", "expected": "account", "metadata": {"split": "validation"}}
+{"input": "Locked out after too many login attempts.", "expected": "account", "metadata": {"split": "validation"}}
+{"input": "See you at the community meetup on Monday!", "expected": "other", "metadata": {"split": "validation"}}
+{"input": "Will you be at the conference on Monday?", "expected": "other", "metadata": {"split": "validation"}}
+{"input": "Any plans for a Linux app?", "expected": "other", "metadata": {"split": "validation"}}
+{"input": "Thanks for the quick help yesterday.", "expected": "other", "metadata": {"split": "validation"}}
+{"input": "I was charged the wrong amount.", "expected": "billing", "metadata": {"split": "test"}}
+{"input": "Please send an invoice with my company name.", "expected": "billing", "metadata": {"split": "test"}}
+{"input": "Refund request for order 4471.", "expected": "billing", "metadata": {"split": "test"}}
+{"input": "My card expired, how do I update it?", "expected": "billing", "metadata": {"split": "test"}}
+{"input": "Why does my receipt show tax twice?", "expected": "billing", "metadata": {"split": "test"}}
+{"input": "Crash on startup after the latest update.", "expected": "bug", "metadata": {"split": "test"}}
+{"input": "Notes won't sync between my phone and laptop.", "expected": "bug", "metadata": {"split": "test"}}
+{"input": "The editor freezes on long documents.", "expected": "bug", "metadata": {"split": "test"}}
+{"input": "Checkboxes reset themselves after I close the app.", "expected": "bug", "metadata": {"split": "test"}}
+{"input": "Every Monday the weekly summary email is empty.", "expected": "bug", "metadata": {"split": "test"}}
+{"input": "Forgot my password.", "expected": "account", "metadata": {"split": "test"}}
+{"input": "Can't log in with Google anymore.", "expected": "account", "metadata": {"split": "test"}}
+{"input": "How do I delete my account?", "expected": "account", "metadata": {"split": "test"}}
+{"input": "Change the email address on my profile.", "expected": "account", "metadata": {"split": "test"}}
+{"input": "Two-step verification codes never arrive.", "expected": "account", "metadata": {"split": "test"}}
+{"input": "Can you add a calendar view?", "expected": "other", "metadata": {"split": "test"}}
+{"input": "Great job on the new design.", "expected": "other", "metadata": {"split": "test"}}
+{"input": "Is the Monday webinar recorded?", "expected": "other", "metadata": {"split": "test"}}
+{"input": "Do you support handwriting input?", "expected": "other", "metadata": {"split": "test"}}
+{"input": "Meetup this Monday: is it still on?", "expected": "other", "metadata": {"split": "test"}}
